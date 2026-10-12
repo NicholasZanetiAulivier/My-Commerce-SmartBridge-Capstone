@@ -19,6 +19,10 @@ db.once('open', () => {
 const dbExports = {};
 dbExports.db = db;
 
+function helperCapitalize(val) {
+    return String(val).charAt(0).toUpperCase() + String(val).slice(1)
+}
+
 const modelsPath = path.join(__dirname, 'models');
 fs.readdirSync(modelsPath)
     .filter(
@@ -29,7 +33,7 @@ fs.readdirSync(modelsPath)
     .forEach((file) => {
         // eslint-disable-next-line import/no-dynamic-require, global-require
         const model = require(path.join(modelsPath, file))(mongoose);
-        dbExports[model.modelName] = model;
+        dbExports[helperCapitalize(model.modelName)] = model;
     });
 
 module.exports = dbExports;

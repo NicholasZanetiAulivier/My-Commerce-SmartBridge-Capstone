@@ -1,72 +1,46 @@
-// const Joi = require("joi");
+const Joi = require("joi");
 
-// // sanitasi field diluar definisi req body
-// const validator = (schema) => (payload) =>
-//   schema.validate(payload, { stripUnknown: true });
+const validator = (schema) => (payload) =>
+    schema.validate(payload, { stripUnknown: true });
 
-// /* Schema untuk Auth */
+const emailSchema = Joi.string().required().email().trim().messages({
+    "any.required": "Email wajib ada!",
+    "string.email": "Format email tidak valid!",
+});
 
-// // username ======= nama tampilan
-// // password harus alphanumeric, min 3 char max 30 char (validation level)
-// // why password is required here? because google auth doesnt need our login/register form
-// const emailSchema = Joi.string().required().email().trim().messages({
-//   "any.required": "Email wajib ada!",
-//   "string.email": "Format email tidak valid!",
-// });
+const usernameSchema = Joi.string().min(1).max(32).trim().messages({
+    "any.required": "Username tidak boleh kosong!",
+    "string.min": "Username tidak boleh kurang dari 1 karakter!",
+    "string.empty": "Username tidak boleh kosong!",
+    "string.max": "Panjang username tidak boleh lebih dari 32 karakter!",
+});
 
-// const usernameSchema = Joi.string().min(1).max(32).trim().messages({
-//   "string.min": "Username tidak boleh kurang dari 1 karakter!",
-//   "string.empty": "Username tidak boleh kosong!",
-//   "string.max": "Panjang username tidak boleh lebih dari 32 karakter!",
-// });
+const passwordSchema = Joi.string()
+    .required()
+    .min(12)
+    .pattern(
+        new RegExp(
+            "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[#@$!%*?&])[A-Za-z\\d#@$!%*?&]{3,30}$",
+        ),
+    )
+    .messages({
+        "any.required": "Password wajib ada!",
+        "string.min": "Panjang password harus 12 karakter ke atas!",
+        "string.pattern.base":
+            "Password harus memiliki huruf besar, huruf kecil, dan karakter spesial (#@$!%*?&), dengan panjang 12-30 karakter!",
+        "any.only": "Password dan confirm password tidak sesuai!",
+    });
 
-// const passwordSchema = Joi.string()
-//   .required()
-//   .min(12)
-//   .pattern(
-//     new RegExp(
-//       "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[#@$!%*?&])[A-Za-z\\d#@$!%*?&]{3,30}$",
-//     ),
-//   )
-//   .messages({
-//     //What the hell is this (stackoverflow)
-//     "any.required": "Password wajib ada!",
-//     "string.min": "Panjang password harus 12 karakter ke atas!",
-//     "string.pattern.base":
-//       "Password harus memiliki huruf besar, huruf kecil, dan karakter spesial (#@$!%*?&), dengan panjang 12-30 karakter!",
-//     "any.only": "Password dan confirm password tidak sesuai!",
-//   });
 
-// const otpSchema = Joi.string()
-//   .length(6)
-//   .pattern(/^[0-9]+$/)
-//   .required()
-//   .messages({
-//     "string.length": "Kode OTP harus berupa angka enam digit!",
-//     "string.pattern.base": "Kode OTP harus berupa angka!",
-//     "any.required": "Kode OTP wajib ada!",
-//   });
-
-// const phoneNumberSchema = Joi.string()
-//   .pattern(new RegExp("^(\\+62|62|0)[8123456789][0-9]{8,13}$"))
-//   .trim()
-//   .messages({
-//     "string.pattern.base":
-//       "Format nomor HP harus merupakan nomor Indonesia yang valid, dimulai dari +62 atau 08 tanpa spasi!",
-//   });
-
-// const registerSchema = Joi.object({
-//   username: usernameSchema,
-//   email: emailSchema,
-//   phone_number: phoneNumberSchema,
-//   password: passwordSchema,
-//   confirm_password: Joi.string()
-//     .required()
-//     .valid(Joi.ref("password"))
-//     .messages({
-//       "any.only": "Password dan konfirmasi password tidak sesuai!",
-//     }),
-// });
+const registerSchema = Joi.object({
+    username: usernameSchema.required(),
+    email: emailSchema.required(),
+    password: passwordSchema.required(),
+    type: Joi.string().lowercase().valid('admin', 'user').required().messages({
+        "any.required": "Type wajib ada!",
+        "any.valid": "Type harus berupa 'admin' atau 'user'"
+    })
+});
 
 // const time24hrSchema = Joi.string().pattern(
 //   /^([01][0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])$/,
@@ -232,28 +206,8 @@
 //   phone_number: phoneNumberSchema.required(),
 // });
 
-// module.exports = {
-//   //  auth
-//   register: validator(registerSchema),
-//   login: validator(loginSchema),
-//   profile: validator(profileSchema),
-//   email: validator(emailSchema),
-//   verifyOtp: validator(verifyOtpSchema),
-//   resetPassword: validator(resetPasswordSchema),
-//   adminEdit: validator(adminEditSchema),
+module.exports = {
+    //  auth
+    register: validator(registerSchema),
 
-//   //  menu
-//   menu: validator(menuSchema),
-//   menuEdit: validator(menuChangeSchema),
-
-//   //  restaurant
-//   status: validator(restaurantUpdateStatusSchema),
-//   restaurant: validator(restaurantDataSchema),
-
-//   //  cart
-//   cartItem: validator(cartItemSchema),
-//   cartItemQuantity: validator(cartItemQuantitySchema),
-
-//   //order
-//   order: validator(orderSchema),
-// };
+};

@@ -19,4 +19,7 @@ module.exports = {
     connection: process.env.DB_CONNECTION,
     name: process.env.DB_NAME,
   },
+  secret: {
+    user: process.env.USER_SECRET
+  }
 };

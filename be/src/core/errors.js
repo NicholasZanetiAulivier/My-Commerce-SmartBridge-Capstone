@@ -115,6 +115,11 @@ const errors = {
     status: 422,
     code: "RESTAURANT_CLOSED_ERROR",
   },
+  USER_ALREADY_EXISTS: {
+    description: "username or email already exists",
+    status: 409,
+    code: "USER_ALREADY_EXISTS_ERROR"
+  }
 };
 
 function errorResponder(code, status, description, message = "") {
