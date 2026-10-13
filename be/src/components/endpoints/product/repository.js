@@ -43,6 +43,13 @@ async function update(id, { title, description, mainImg, carousel, category, siz
     return await Product.updateOne({ _id: new ObjectId(id) }, update);
 }
 
+async function getCategories() {
+    return await Product.aggregate([
+        { $sort: { category: 1 } },
+        { $group: { _id: "$category" } }
+    ]);
+}
+
 module.exports = {
     hello,
     searchAndPageSimple,
@@ -50,5 +57,6 @@ module.exports = {
     getById,
     getByCategory,
     createProduct,
-    update
+    update,
+    getCategories
 }

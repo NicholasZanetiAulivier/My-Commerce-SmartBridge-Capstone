@@ -76,10 +76,19 @@ async function updateProduct(id, { title, description, mainImg, carousel, catego
     };
 }
 
+async function getCategories() {
+    const result = await repository.getCategories();
+    return {
+        categories: result.map((a) => a._id),
+        count: result.length
+    };
+}
+
 module.exports = {
     hello,
     getProducts,
     getById,
     createProduct,
-    updateProduct
+    updateProduct,
+    getCategories
 }

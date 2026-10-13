@@ -104,10 +104,20 @@ async function updateProduct(req, res, next) {
     }
 }
 
+async function getCategories(req, res, next) {
+    try {
+        const data = await service.getCategories();
+        return res.status(200).json(data);
+    } catch (e) {
+        return next(e);
+    }
+}
+
 module.exports = {
     hello,
     getProducts,
     getById,
     createProduct,
-    updateProduct
+    updateProduct,
+    getCategories
 }
