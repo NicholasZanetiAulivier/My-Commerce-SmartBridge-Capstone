@@ -56,7 +56,19 @@ async function getProducts(req, res, next) {
     }
 }
 
+async function getById(req, res, next) {
+    try {
+        let { id } = req.params;
+        const results = await service.getById(id);
+
+        return res.status(200).json(results);
+    } catch (e) {
+        return next(e);
+    }
+}
+
 module.exports = {
     hello,
     getProducts,
+    getById
 }

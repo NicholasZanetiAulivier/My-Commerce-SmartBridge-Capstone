@@ -31,11 +31,11 @@ async function register(username, email, type, password) {
 async function login(email, password) {
     const user = await repository.findUserByEmailOrUsername(email, null);
     if (user == null) {
-        throw errorResponder(errors.UNAUTHORIZED, 401, "Incorrect login info");
+        throw errorResponder(errors.UNAUTHORIZED, "Incorrect login info");
     }
 
     if (!(await passwordMatched(password, user.password))) {
-        throw errorResponder(errors.UNAUTHORIZED, 401, "Incorrect login info");
+        throw errorResponder(errors.UNAUTHORIZED, "Incorrect login info");
     }
 
     const token = await generateRefreshToken();
@@ -56,18 +56,18 @@ async function login(email, password) {
 
 async function refresh(user, refreshToken) {
     if (!refreshToken) {
-        throw errorResponder(errors.UNAUTHORIZED, 401, "Refresh token doesn't exist");
+        throw errorResponder(errors.UNAUTHORIZED, "Refresh token doesn't exist");
     }
 
 
     const u = await repository.getUserById(user.id);
     if (!u) {
-        throw errorResponder(errors.NOT_FOUND, 404, "User not found", "User not found");
+        throw errorResponder(errors.NOT_FOUND, "User not found", "User not found");
     }
 
     const tokens = await repository.getTokenByUserId(user.id);
     if (tokens.filter((a) => passwordMatched(refreshToken, a.token)).length < 1) {
-        throw errorResponder(errors.TOKEN_EXPIRED, 401, "Refresh token is invalid or expired");
+        throw errorResponder(errors.TOKEN_EXPIRED, "Refresh token is invalid or expired");
     }
 
     const token = await generateRefreshToken();

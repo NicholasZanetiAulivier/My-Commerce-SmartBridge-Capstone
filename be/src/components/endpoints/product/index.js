@@ -5,8 +5,8 @@ const { protect } = require('../../middlewares/authMiddleware');
 const route = express.Router();
 
 //Paths
+route.get('/:id', controller.getById);
 route.get('/', controller.getProducts);
-route.get('/:id', controller.hello);
 route.get('/categories', controller.hello);
 
 route.post('/', protect, controller.hello);
