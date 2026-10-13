@@ -1,4 +1,4 @@
-const { processJoiValidationError, errorResponder, errors } = require('../../../core/errors');
+const { processJoiValidationError } = require('../../../core/errors');
 const { cookieOptions } = require('../../../utils/token');
 const service = require('./service');
 const validate = require('../../middlewares/validator');

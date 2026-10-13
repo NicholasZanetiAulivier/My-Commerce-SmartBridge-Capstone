@@ -9,7 +9,7 @@ route.get('/:id', controller.getById);
 route.get('/', controller.getProducts);
 route.get('/categories', controller.hello);
 
-route.post('/', protect, controller.hello);
-route.put('/:id', protect, controller.hello);
+route.put('/:id', protect, controller.updateProduct);
+route.post('/', protect, controller.createProduct);
 
 module.exports = route;

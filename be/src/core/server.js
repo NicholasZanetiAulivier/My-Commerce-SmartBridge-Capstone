@@ -86,7 +86,7 @@ module.exports = (app) => {
     };
 
     if (err.status === 500) {
-      obj = errorObj;
+      let obj = errorObj;
       errorObj = {
         ...obj,
         message: "An error has occurred", // message obfuscation

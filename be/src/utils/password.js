@@ -1,6 +1,5 @@
 const bcrypt = require('bcrypt');
-const config = require('../core/config');
-const crypto = require('crypto'); 
+const crypto = require('crypto');
 
 async function hashOtp(plaintextOtp) {
   const saltRounds = 10; // biar server gk meledak
@@ -39,8 +38,8 @@ async function passwordMatched(plaintextPassword, hashedPassword) {
 }
 
 async function hashOpaqueString(string) {
-    const result = crypto.createHash('sha512').update(string).digest('hex');
-    return result;
+  const result = crypto.createHash('sha512').update(string).digest('hex');
+  return result;
 }
 
 async function compareOpaqueStringHash(string, hashedString) {

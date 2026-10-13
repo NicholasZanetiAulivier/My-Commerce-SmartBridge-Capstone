@@ -17,7 +17,7 @@ module.exports.protect = (req, res, next) => {
         req.user = decoded;
         next();
 
-      } catch (error) {
+      } catch (_error) {
         throw errorResponder(errors.UNAUTHORIZED, "Access token invalid");
       }
     }

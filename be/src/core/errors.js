@@ -9,6 +9,11 @@ const errors = {
     status: 404,
     code: "NOT_FOUND_ERROR",
   },
+  FORBIDDEN: {
+    description: "Forbidden Access!",
+    status: 404,
+    code: "FORBIDDEN_ERROR",
+  },
   NO_ARGUMENT: {
     description: "Required arguments not supplied",
     status: 500,
@@ -121,16 +126,6 @@ const errors = {
     code: "USER_ALREADY_EXISTS_ERROR"
   }
 };
-
-function errorResponder(code, status, description, message = "") {
-  const err = new Error(message);
-
-  err.code = code;
-  err.status = status;
-  err.description = description;
-
-  return err;
-}
 
 function errorResponder(type, message = "") {
   const error = new Error(message);

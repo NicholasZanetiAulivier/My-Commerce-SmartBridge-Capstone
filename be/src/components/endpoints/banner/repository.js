@@ -1,4 +1,4 @@
-const { test } = require('../../../database');
+// const { test } = require('../../../database');
 
 async function hello() {
     // test.findOne({ ...}, { ...});

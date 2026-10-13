@@ -1,4 +1,3 @@
-const config = require('../core/config')
 
 const userPayload = user => ({
     id: user._id,
