@@ -5,7 +5,7 @@ const { protect } = require('../../middlewares/authMiddleware');
 const route = express.Router();
 
 //Paths
-route.get('/', controller.hello);
+route.get('/', controller.getProducts);
 route.get('/:id', controller.hello);
 route.get('/categories', controller.hello);
 

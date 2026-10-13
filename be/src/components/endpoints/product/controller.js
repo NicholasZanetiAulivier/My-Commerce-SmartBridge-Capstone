@@ -1,7 +1,6 @@
-// const { errorResponder, errors } = require('../../../core/errors');
+const { errorResponder, errors } = require('../../../core/errors');
 const service = require('./service');
-// const jwt = require('jsonwebtoken');
-// const bcrypt = require('bcrypt');
+const { checkInteger } = require('../../../utils/checks');
 
 async function hello(req, res, next) {
     try {
@@ -42,6 +41,22 @@ async function hello(req, res, next) {
     }
 }
 
+async function getProducts(req, res, next) {
+    try {
+        let { offset, limit, search } = req.query;
+
+        offset = checkInteger(offset, 0, Number.POSITIVE_INFINITY, 0);
+        limit = checkInteger(limit, 0, 100, 10);
+
+        const results = await service.getProducts(offset, limit, search);
+
+        return res.status(200).json(results);
+    } catch (e) {
+        return next(e);
+    }
+}
+
 module.exports = {
-    hello
+    hello,
+    getProducts,
 }

@@ -1,12 +1,8 @@
 const { errorResponder, errors } = require('../../../core/errors');
-const { hashPassword, compareOpaqueStringHash, passwordMatched } = require('../../../utils/password');
+const { hashPassword, passwordMatched } = require('../../../utils/password');
 const { generateUserJwt, generateRefreshToken } = require('../../../utils/token');
 const repository = require('./repository');
 
-async function hello() {
-    const results = await repository.hello();
-    return results;
-}
 
 async function register(username, email, type, password) {
     const user = await repository.findUserByEmailOrUsername(email, username);
@@ -16,11 +12,10 @@ async function register(username, email, type, password) {
 
     const hashed = await hashPassword(password);
     const createdUser = await repository.saveUser({ username, email, type, password: hashed });
-    console.log(createdUser);
 
     const token = await generateUserJwt(createdUser);
 
-    await repository.addRefreshToken(user, await hashPassword(token));
+    await repository.addRefreshToken(createdUser, await hashPassword(token));
 
     return {
         data: {
@@ -70,7 +65,8 @@ async function refresh(user, refreshToken) {
         throw errorResponder(errors.NOT_FOUND, 404, "User not found", "User not found");
     }
 
-    if (u.refreshTokens.filter((a) => passwordMatched(refreshToken, a.token)).length < 1) {
+    const tokens = await repository.getTokenByUserId(user.id);
+    if (tokens.filter((a) => passwordMatched(refreshToken, a.token)).length < 1) {
         throw errorResponder(errors.TOKEN_EXPIRED, 401, "Refresh token is invalid or expired");
     }
 
@@ -86,9 +82,26 @@ async function refresh(user, refreshToken) {
     };
 }
 
+async function getUsers(offset, limit, search) {
+    let result;
+    if (search) {
+        result = await repository.searchAndPage(search, offset, limit);
+    } else {
+        result = await repository.findAndPage(offset, limit);
+    }
+    return {
+        users: result,
+        count: result.length,
+        offset,
+        limit,
+        search: search || null
+    };
+}
+
 
 module.exports = {
     register,
     refresh,
+    getUsers,
     login
 }

@@ -8,14 +8,10 @@ module.exports = (db) =>
                 username: String,
                 password: String,
                 email: String,
-                type: String,
-                refreshTokens: [{
-                    createdAt: Date,
-                    token: String
-                }]
+                type: String
             },
             {
                 collection: name,
             }
-        )
+        ).index({ username: 'text', email: 'text' })
     );

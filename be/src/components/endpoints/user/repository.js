@@ -1,11 +1,4 @@
-const { errorResponder, errors } = require('../../../core/errors');
-const { User } = require('../../../database');
-const { hashPassword } = require('../../../utils/password');
-
-async function hello() {
-    // test.findOne({ ...}, { ...});
-    return { "message": "hellow" };
-}
+const { User, Token } = require('../../../database');
 
 async function findUserByEmailOrUsername(email, username) {
     return User.findOne({ $or: [{ email }, { username }] });
@@ -17,15 +10,24 @@ async function saveUser({ username, email, password, type }) {
 }
 
 async function addRefreshToken(user, hashedToken) {
-    const res = await User.updateOne({ _id: user._id }, { $push: { refreshTokens: { createdAt: Date.now(), token: hashedToken } } });
-    if (!res.acknowledged || res.modifiedCount < 1) {
-        throw errorResponder(errors.DB);
-    }
-    return;
+    const newToken = new Token({ createdAt: Date.now(), token: hashedToken, userId: user._id });
+    return newToken.save();
+}
+
+async function getTokenByUserId(userId) {
+    return Token.find({ userId });
 }
 
 async function getUserById(userId) {
     return User.findOne({ _id: userId });
+}
+
+async function searchAndPage(search, offset, limit) {
+    return User.find({ $text: { $search: search } }, { password: 0, __v: 0 }, { sort: { username: 1 }, skip: offset, limit: limit });
+}
+
+async function findAndPage(offset, limit) {
+    return User.find({}, { password: 0, __v: 0 }, { sort: { username: 1 }, skip: offset, limit: limit });
 }
 
 module.exports = {
@@ -33,5 +35,7 @@ module.exports = {
     saveUser,
     addRefreshToken,
     getUserById,
-    hello
+    searchAndPage,
+    findAndPage,
+    getTokenByUserId,
 }

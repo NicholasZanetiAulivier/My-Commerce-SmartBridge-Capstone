@@ -1,21 +1,15 @@
 const { errorResponder, errors } = require('../core/errors');
-const { parseUserId } = require('./id-parser')
 
-function checkInteger(i, minVal, name) {
-    if (Number.isNaN(i))
-        throw errorResponder(errors.BAD_ID, "ID tidak dapat diproses");
-    if (i < minVal)
-        throw errorResponder(errors.BAD_ID, "ID harus berupa angka positif >= " + minVal + i);
-    if (Number.isInteger(i))
+function checkInteger(i, minVal, maxVal, defau) {
+    if (i && Number.isInteger(i))
         throw errorResponder(errors.BAD_ID, "ID harus berupa angka bulat");
+    return Math.max(Math.min(maxVal, i || defau), minVal)
 }
 
 function checkUserParamsTokenID(userId, paramUserId) {
-    // kedua id prefixed
     if (!(userId === paramUserId)) {
         throw errorResponder(errors.INVALID_CREDENTIALS, "User tidak memiliki hak akses untuk data yang diminta!");
     }
-    // return userId;
     return true;
 }
 

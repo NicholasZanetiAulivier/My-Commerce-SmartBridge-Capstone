@@ -30,7 +30,7 @@ fs.readdirSync(modelsPath)
             file.indexOf('.') !== 0 &&
             file.slice(-3) === '.js'
     )
-    .forEach((file) => {
+    .forEach(async (file) => {
         // eslint-disable-next-line import/no-dynamic-require, global-require
         const model = require(path.join(modelsPath, file))(mongoose);
         dbExports[helperCapitalize(model.modelName)] = model;

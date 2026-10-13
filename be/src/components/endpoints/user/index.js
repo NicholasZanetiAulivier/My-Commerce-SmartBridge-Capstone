@@ -10,7 +10,6 @@ route.post('/login', controller.login);
 route.post('/refresh', protect, controller.refresh);
 
 
-route.get('/', controller.hello);
-route.get('/:id', controller.hello);
+route.get('/', protect, controller.getUsers);
 
 module.exports = route;
