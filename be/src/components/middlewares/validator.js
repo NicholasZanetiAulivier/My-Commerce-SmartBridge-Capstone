@@ -46,10 +46,10 @@ const registerSchema = Joi.object({
 //   /^([01][0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])$/,
 // ); // HH:MM:SS 24 hr
 
-// const loginSchema = Joi.object({
-//   email: emailSchema,
-//   password: passwordSchema,
-// });
+const loginSchema = Joi.object({
+    email: emailSchema,
+    password: passwordSchema,
+});
 
 // const imageUrlSchema = Joi.string()
 //   .uri({
@@ -209,5 +209,6 @@ const registerSchema = Joi.object({
 module.exports = {
     //  auth
     register: validator(registerSchema),
+    login: validator(loginSchema)
 
 };

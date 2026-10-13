@@ -8,7 +8,11 @@ module.exports = (db) =>
                 username: String,
                 password: String,
                 email: String,
-                type: String
+                type: String,
+                refreshTokens: [{
+                    createdAt: Date,
+                    token: String
+                }]
             },
             {
                 collection: name,

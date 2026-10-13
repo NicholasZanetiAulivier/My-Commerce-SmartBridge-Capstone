@@ -1,6 +1,6 @@
 const { errorResponder, errors } = require('../../../core/errors');
-const { hashPassword } = require('../../../utils/password');
-const { generateUserJwt } = require('../../../utils/token');
+const { hashPassword, compareOpaqueStringHash, passwordMatched } = require('../../../utils/password');
+const { generateUserJwt, generateRefreshToken } = require('../../../utils/token');
 const repository = require('./repository');
 
 async function hello() {
@@ -19,6 +19,9 @@ async function register(username, email, type, password) {
     console.log(createdUser);
 
     const token = await generateUserJwt(createdUser);
+
+    await repository.addRefreshToken(user, await hashPassword(token));
+
     return {
         data: {
             id: createdUser._id,
@@ -30,6 +33,62 @@ async function register(username, email, type, password) {
     };
 }
 
+async function login(email, password) {
+    const user = await repository.findUserByEmailOrUsername(email, null);
+    if (user == null) {
+        throw errorResponder(errors.UNAUTHORIZED, 401, "Incorrect login info");
+    }
+
+    if (!(await passwordMatched(password, user.password))) {
+        throw errorResponder(errors.UNAUTHORIZED, 401, "Incorrect login info");
+    }
+
+    const token = await generateRefreshToken();
+
+    await repository.addRefreshToken(user, await hashPassword(token));
+
+    return {
+        data: {
+            id: user._id,
+            username: user.username,
+            email: user.email,
+            type: user.type,
+            accessToken: await generateUserJwt(user)
+        },
+        token
+    };
+}
+
+async function refresh(user, refreshToken) {
+    if (!refreshToken) {
+        throw errorResponder(errors.UNAUTHORIZED, 401, "Refresh token doesn't exist");
+    }
+
+
+    const u = await repository.getUserById(user.id);
+    if (!u) {
+        throw errorResponder(errors.NOT_FOUND, 404, "User not found", "User not found");
+    }
+
+    if (u.refreshTokens.filter((a) => passwordMatched(refreshToken, a.token)).length < 1) {
+        throw errorResponder(errors.TOKEN_EXPIRED, 401, "Refresh token is invalid or expired");
+    }
+
+    const token = await generateRefreshToken();
+
+    await repository.addRefreshToken(u, await hashPassword(token));
+
+    return {
+        data: {
+            accessToken: await generateUserJwt(u)
+        },
+        token
+    };
+}
+
+
 module.exports = {
-    register
+    register,
+    refresh,
+    login
 }

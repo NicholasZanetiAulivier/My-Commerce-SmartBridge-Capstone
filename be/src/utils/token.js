@@ -14,6 +14,10 @@ async function generateUserJwt(user) {
   });
 }
 
+function verifyUserJwt(token) {
+  return jwt.verify(token, config.secret.user);
+}
+
 // generate opaque string
 async function generateRefreshToken() {
   return crypto.randomBytes(32).toString("hex");
@@ -31,6 +35,7 @@ const cookieOptions = {
 module.exports = {
   generateUserJwt,
   generateRefreshToken,
+  verifyUserJwt,
   REFRESH_TOKEN_EXPIRY_SECONDS,
   cookieOptions,
 };
