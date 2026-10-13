@@ -1,5 +1,5 @@
 const { errorResponder, errors } = require('../../../core/errors');
-const { hashPassword, passwordMatched } = require('../../../utils/password');
+const { hashPassword, passwordMatched, hashOpaqueString } = require('../../../utils/password');
 const { generateUserJwt, generateRefreshToken } = require('../../../utils/token');
 const repository = require('./repository');
 
@@ -40,7 +40,7 @@ async function login(email, password) {
 
     const token = await generateRefreshToken();
 
-    await repository.addRefreshToken(user, await hashPassword(token));
+    await repository.addRefreshToken(user, await hashOpaqueString(token));
 
     return {
         data: {
@@ -54,25 +54,22 @@ async function login(email, password) {
     };
 }
 
-async function refresh(user, refreshToken) {
+async function refresh(refreshToken) {
     if (!refreshToken) {
         throw errorResponder(errors.UNAUTHORIZED, "Refresh token doesn't exist");
     }
 
-
-    const u = await repository.getUserById(user.id);
-    if (!u) {
-        throw errorResponder(errors.NOT_FOUND, "User not found", "User not found");
-    }
-
-    const tokens = await repository.getTokenByUserId(user.id);
-    if (tokens.filter((a) => passwordMatched(refreshToken, a.token)).length < 1) {
-        throw errorResponder(errors.TOKEN_EXPIRED, "Refresh token is invalid or expired");
-    }
+    const tokenDocs = await repository.getToken(await hashOpaqueString(refreshToken));
+    if (!tokenDocs)
+        throw errorResponder(errors.UNAUTHORIZED, "Refresh token doesn't exist");
 
     const token = await generateRefreshToken();
 
-    await repository.addRefreshToken(u, await hashPassword(token));
+    const u = await repository.getUserById(tokenDocs.userId);
+    console.log(tokenDocs);
+    console.log(u);
+
+    await repository.addRefreshToken(u, await hashOpaqueString(token));
 
     return {
         data: {

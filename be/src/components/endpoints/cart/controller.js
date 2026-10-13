@@ -1,7 +1,6 @@
-// const { errorResponder, errors } = require('../../../core/errors');
 const service = require('./service');
-// const jwt = require('jsonwebtoken');
-// const bcrypt = require('bcrypt');
+const validate = require('../../middlewares/validator');
+const { processJoiValidationError, errorResponder, errors } = require('../../../core/errors');
 
 async function hello(req, res, next) {
     try {
@@ -42,6 +41,65 @@ async function hello(req, res, next) {
     }
 }
 
+async function getCart(req, res, next) {
+    try {
+        const { id } = req.user;
+
+        const results = await service.getCartByUserId(id);
+
+        return res.status(200).json(results);
+    } catch (e) {
+        return next(e);
+    }
+}
+
+async function addToCart(req, res, next) {
+    try {
+        const { error, value } = validate.cartAdd(req.body);
+        processJoiValidationError(error);
+        const { productId, qty } = value;
+
+        const { id } = req.user;
+        const results = await service.addToCart(id, { productId, qty });
+        return res.status(201).json(results);
+
+    } catch (e) {
+        return next(e);
+    }
+}
+
+async function setQuantity(req, res, next) {
+    try {
+        const { error, value } = validate.cartQuantity(req.body);
+        processJoiValidationError(error);
+        const { qty } = value;
+        const { productId } = req.params;
+        const { id } = req.user;
+
+        const results = await service.modifyCartAmount(id, productId, qty);
+        return res.status(200).json(results);
+    } catch (e) {
+        return next(e);
+    }
+}
+
+async function deleteItemFromCart(req, res, next) {
+    try {
+        const { productId } = req.params;
+        const { id } = req.user;
+
+        const results = await service.deleteItem(id, productId);
+        return res.status(200).json(results);
+
+    } catch (e) {
+        return next(e);
+    }
+}
+
 module.exports = {
-    hello
+    hello,
+    getCart,
+    addToCart,
+    setQuantity,
+    deleteItemFromCart
 }

@@ -29,7 +29,7 @@ const cookieOptions = {
   sameSite: "none",
   partitioned: true,
   path: "/",
-  maxAge: REFRESH_TOKEN_EXPIRY_SECONDS * 1000,
+  expires: new Date(Date.now() + REFRESH_TOKEN_EXPIRY_SECONDS * 1000),
 };
 
 module.exports = {

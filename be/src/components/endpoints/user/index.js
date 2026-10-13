@@ -7,7 +7,7 @@ const route = express.Router();
 //Paths
 route.post('/register', controller.register);
 route.post('/login', controller.login);
-route.post('/refresh', protect, controller.refresh);
+route.post('/refresh', controller.refresh);
 
 
 route.get('/', protect, controller.getUsers);

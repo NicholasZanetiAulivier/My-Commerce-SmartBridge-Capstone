@@ -35,7 +35,7 @@ async function login(req, res, next) {
 
 async function refresh(req, res, next) {
     try {
-        const { data, token } = await service.refresh(req.user, req.cookies['refreshToken']);
+        const { data, token } = await service.refresh(req.cookies['refreshToken']);
         res.cookie("refreshToken", token, cookieOptions);
         return res.status(200).json(data);
     } catch (e) {

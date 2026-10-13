@@ -75,6 +75,15 @@ const productUpdateSchema = Joi.object({
     discount: Joi.number()
 });
 
+const cartAddSchema = Joi.object({
+    productId: Joi.string().required(),
+    qty: Joi.number().integer().min(1).required()
+})
+
+const cartQuantitySchema = Joi.object({
+    qty: Joi.number().integer().min(1).required()
+});
+
 // const imageUrlSchema = Joi.string()
 //   .uri({
 //     scheme: ["https"],
@@ -237,6 +246,10 @@ module.exports = {
 
     //Products
     product: validator(productSchema),
-    productUpdate: validator(productUpdateSchema)
+    productUpdate: validator(productUpdateSchema),
 
+
+    //Cart
+    cartAdd: validator(cartAddSchema),
+    cartQuantity: validator(cartQuantitySchema)
 };

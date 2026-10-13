@@ -18,5 +18,5 @@ module.exports = (db) =>
             {
                 collection: name,
             }
-        ).index({ title: 'text', description: 'text', category: 'text' })
+        )
     );

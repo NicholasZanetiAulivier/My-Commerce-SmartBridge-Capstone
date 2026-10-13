@@ -1,13 +1,9 @@
 const { ObjectId } = require('mongodb');
 const { Product } = require('../../../database');
 
-async function hello() {
-    // test.findOne({ ...}, { ...});
-    return { "message": "hellow" };
-}
-
 async function searchAndPageSimple(search, offset, limit, category) {
-    const q = { $text: { $search: search } }
+    const regex = new RegExp(search, "i");
+    const q = { $or: [{ title: { $regex: regex } }, { description: { $regex: regex } }, { category: { $regex: regex } }] }
     if (category) q['category'] = category;
     return Product.find(q, { carousel: 0, sizes: 0, gender: 0, __v: 0 }, { sort: { title: 1 }, skip: offset, limit: limit });
 }
@@ -51,7 +47,6 @@ async function getCategories() {
 }
 
 module.exports = {
-    hello,
     searchAndPageSimple,
     findAndPageSimple,
     getById,

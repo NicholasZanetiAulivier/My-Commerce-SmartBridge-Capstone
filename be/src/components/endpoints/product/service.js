@@ -1,11 +1,6 @@
 const { errorResponder, errors } = require('../../../core/errors');
 const repository = require('./repository');
 
-async function hello() {
-    const results = await repository.hello();
-    return results;
-}
-
 async function getProducts(offset, limit, search, category) {
     let result;
     if (search) {
@@ -85,7 +80,6 @@ async function getCategories() {
 }
 
 module.exports = {
-    hello,
     getProducts,
     getById,
     createProduct,
