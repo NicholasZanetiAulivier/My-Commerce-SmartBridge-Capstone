@@ -8,7 +8,8 @@ const route = express.Router();
 route.post('/', protect, controller.createOrder);
 route.get('/', protect, controller.getHistory);
 
-route.put('/cancel/:id', protect, controller.cancel);
-route.put('/status/:id', protect, controller.updateStatus);
+route.patch('/cancel/:id', protect, controller.cancel);
+route.patch('/completed/:id', protect, controller.completed);
+route.patch('/status/:id', protect, controller.updateStatus);
 
 module.exports = route;

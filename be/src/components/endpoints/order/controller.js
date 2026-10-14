@@ -74,9 +74,7 @@ async function createOrder(req, res, next) {
 
 async function cancel(req, res, next) {
     try {
-        const { error, value } = validate.orderStatus(req.body);
-        processJoiValidationError(error);
-        const { status } = value;
+        const status = 'cancel';
 
         const { id } = req.params;
         const { id: uid, type } = req.user;
@@ -106,10 +104,26 @@ async function updateStatus(req, res, next) {
     }
 }
 
+async function completed(req, res, next) {
+    try {
+        const status = 'cancel';
+
+        const { id } = req.params;
+        const { id: uid, type } = req.user;
+        if (type !== 'user') throw errorResponder(errors.FORBIDDEN, "Only users can access this function");
+
+        const results = await service.cancel(status, id, uid);
+        return res.status(200).json(results);
+    } catch (e) {
+        return next(e);
+    }
+}
+
 module.exports = {
     hello,
     getHistory,
     createOrder,
     cancel,
-    updateStatus
+    updateStatus,
+    completed
 }
