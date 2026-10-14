@@ -1,6 +1,7 @@
 const { errorResponder, errors } = require('../../../core/errors');
 const repository = require('./repository');
 const userRepository = require('../user/repository');
+const { ObjectId } = require('mongodb');
 
 async function hello() {
     const results = await repository.hello();
@@ -21,6 +22,7 @@ async function getHistory(id, offset, limit) {
             results.map((e) => (
                 {
                     orderDetails: {
+                        id: e._id,
                         name: e.name,
                         email: e.email,
                         mobile: e.mobile,
@@ -67,8 +69,55 @@ async function createOrder(id, name, email, mobile, address, postCode, paymentMe
 
 }
 
+async function cancel(status, orderId, userId) {
+    let order;
+    try {
+        order = await repository.getOrderByUserIdAndId(userId, order);
+        if (!order)
+            throw new Error();
+    } catch (e) {
+        throw errorResponder(errors.NOT_FOUND, "Order not found");
+    }
+
+    if (['in delivery', 'delivered', 'completed', 'cancelled'].includes(order.status)) {
+        throw errorResponder(errors.DB, "Status can't be cancelled");
+    }
+
+    const result = await repository.updateStatus(orderId, userId, status);
+    if (result.modifiedCount < 1) {
+        throw errorResponder(errors.DB, "Unable to update status");
+    }
+
+    return { message: "Successfully cancelled order status" };
+
+}
+
+async function updateStatus(status, orderId) {
+    let order;
+    try {
+        order = await repository.getOrderById(orderId);
+        if (!order)
+            throw new Error();
+    } catch (e) {
+        throw errorResponder(errors.NOT_FOUND, "Order not found");
+    }
+
+    if (order.status === 'completed') {
+        throw errorResponder(errors.DB, "Status can't be changed");
+    }
+
+    const result = await repository.updateStatusByOrder(status, orderId);
+    if (result.modifiedCount < 1) {
+        throw errorResponder(errors.DB, "Unable to update status");
+    }
+
+    return { message: "Successfully changed order status" };
+}
+
 module.exports = {
     hello,
     getHistory,
-    createOrder
+    createOrder,
+    cancel,
+    updateStatus
 }

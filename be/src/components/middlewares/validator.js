@@ -93,6 +93,10 @@ const orderCreationSchema = Joi.object({
     paymentMethod: Joi.string().required(),
 });
 
+const orderStatusSchema = Joi.object({
+    status: Joi.string().lowercase().valid('pending', 'canceled', 'in delivery', 'delivered', 'completed').required()
+});
+
 // const imageUrlSchema = Joi.string()
 //   .uri({
 //     scheme: ["https"],
@@ -263,5 +267,6 @@ module.exports = {
     cartQuantity: validator(cartQuantitySchema),
 
     //Order
-    orderCreation: validator(orderCreationSchema)
+    orderCreation: validator(orderCreationSchema),
+    orderStatus: validator(orderStatusSchema)
 };

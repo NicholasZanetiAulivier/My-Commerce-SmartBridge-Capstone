@@ -35,8 +35,28 @@ async function transactionOrdering(user, name, email, mobile, address, postCode,
     return result;
 }
 
+async function getOrderByUserIdAndId(uid, oid) {
+    return await Order.findOne({ userId: new ObjectId(uid), _id: new ObjectId(oid) });
+}
+
+async function updateStatus(status, uid, oid) {
+    return await Order.updateOne({ userId: new ObjectId(uid), _id: new ObjectId(oid) }, { orderStatus: status });
+}
+
+async function updateStatusByOrder(status, oid) {
+    return await Order.updateOne({ _id: new ObjectId(oid) }, { orderStatus: status });
+}
+
+async function getOrderById(id) {
+    return await Order.findOne({ _id: new ObjectId(id) });
+}
+
 module.exports = {
     hello,
     getOrderListByUid,
-    transactionOrdering
+    transactionOrdering,
+    getOrderByUserIdAndId,
+    updateStatus,
+    getOrderById,
+    updateStatusByOrder
 }
