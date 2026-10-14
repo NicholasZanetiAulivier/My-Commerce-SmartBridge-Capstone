@@ -7,24 +7,24 @@ const AllUsers = () => {
   const [users, setUsers] = useState([]);
   const [orders, setOrders] = useState([]);
 
-  useEffect(()=>{
-    fetchUsersData();
-  }, [])
+  // useEffect(()=>{
+  //   fetchUsersData();
+  // }, [])
 
-  const fetchUsersData = async() =>{
-    await axios.get('http://localhost:6001/api/users/fetch-users').then(
-      (response)=>{
-        setUsers(response.data.filter(user=> user.usertype === 'customer'));
-      }
-    )
+  // const fetchUsersData = async() =>{
+  //   await axios.get('http://localhost:6001/api/users/fetch-users').then(
+  //     (response)=>{
+  //       setUsers(response.data.filter(user=> user.usertype === 'customer'));
+  //     }
+  //   )
 
-    await axios.get('http://localhost:6001/api/orders/fetch-orders').then(
-      (response)=>{
-        setOrders(response.data);
-      }
-    )
-   
-  }
+  //   await axios.get('http://localhost:6001/api/orders/fetch-orders').then(
+  //     (response)=>{
+  //       setOrders(response.data);
+  //     }
+  //   )
+
+  // }
 
 
   return (
@@ -33,8 +33,8 @@ const AllUsers = () => {
 
       <div className="user-cards">
 
-        {users.map((user)=>{
-          return(
+        {users.map((user) => {
+          return (
             <div className="user-card">
               <span>
                 <h5>User Id </h5>
@@ -50,12 +50,12 @@ const AllUsers = () => {
               </span>
               <span>
                 <h5>Orders </h5>
-                <p>{orders.filter(order=> order.userId === user._id).length}</p>
+                <p>{orders.filter(order => order.userId === user._id).length}</p>
               </span>
             </div>
           )
         })}
-        
+
 
       </div>
 

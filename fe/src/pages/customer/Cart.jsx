@@ -11,55 +11,55 @@ const Cart = () => {
 
   const navigate = useNavigate();
 
-  useEffect(() => {
-    fetchCart();
-  }, []);
+  // useEffect(() => {
+  //   fetchCart();
+  // }, []);
 
-  const fetchCart = async () => {
-    try {
-      const config = {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
-        },
-      };
-      const response = await axios.get('http://localhost:6001/api/cart/fetch-cart', config);
+  // const fetchCart = async () => {
+  //   try {
+  //     const config = {
+  //       headers: {
+  //         Authorization: `Bearer ${localStorage.getItem('token')}`,
+  //       },
+  //     };
+  //     const response = await axios.get('http://localhost:6001/api/cart/fetch-cart', config);
 
-      // Ensure cartItems is always an array
-      const items = Array.isArray(response.data) ? response.data : [];
-      setCartItems(items);
+  //     // Ensure cartItems is always an array
+  //     const items = Array.isArray(response.data) ? response.data : [];
+  //     setCartItems(items);
 
-      // Update navbar count using total quantity
-      const count = items.reduce((acc, item) => acc + (parseInt(item.quantity) || 0), 0);
-      setCartCount(count);
-    } catch (error) {
-      console.error('Error fetching cart:', error);
-      setCartItems([]);
-    } finally {
-      setLoading(false);
-    }
-  };
+  //     // Update navbar count using total quantity
+  //     const count = items.reduce((acc, item) => acc + (parseInt(item.quantity) || 0), 0);
+  //     setCartCount(count);
+  //   } catch (error) {
+  //     console.error('Error fetching cart:', error);
+  //     setCartItems([]);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
-  const removeItem = async (itemId) => {
-    try {
-      const config = {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
-        },
-      };
-      await axios.delete(`http://localhost:6001/api/cart/remove-item/${itemId}`, config);
-      fetchCart(); // refresh cart after deletion
-    } catch (error) {
-      console.error('Error removing item:', error);
-    }
-  };
+  // const removeItem = async (itemId) => {
+  //   try {
+  //     const config = {
+  //       headers: {
+  //         Authorization: `Bearer ${localStorage.getItem('token')}`,
+  //       },
+  //     };
+  //     await axios.delete(`http://localhost:6001/api/cart/remove-item/${itemId}`, config);
+  //     fetchCart(); // refresh cart after deletion
+  //   } catch (error) {
+  //     console.error('Error removing item:', error);
+  //   }
+  // };
 
   const [totalPrice, setTotalPrice] = useState(0);
   const [totalDiscount, setTotalDiscount] = useState(0);
   const [deliveryCharges, setDeliveryCharges] = useState(0);
 
   const calculateTotalPrice = () => {
-    const total = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    const discount = cartItems.reduce((sum, item) => sum + ((item.price * item.discount) / 100) * item.quantity, 0);
+    const total = cartItems.reduce((sum, item) => sum + (item.price * item.qty), 0);
+    const discount = cartItems.reduce((sum, item) => sum + ((item.price * item.discount)) * item.qty, 0);
     setTotalPrice(total);
     setTotalDiscount(Math.floor(discount));
     setDeliveryCharges(total > 1000 || cartItems.length === 0 ? 0 : 50);
@@ -79,32 +79,32 @@ const Cart = () => {
 
   const userId = localStorage.getItem('userId');
 
-  const placeOrder = async () => {
-    if (cartItems.length === 0) return;
+  // const placeOrder = async () => {
+  //   if (cartItems.length === 0) return;
 
-    try {
-      await axios.post('http://localhost:6001/api/orders/place-cart-order', {
-        userId,
-        name,
-        mobile,
-        email,
-        address,
-        pincode,
-        paymentMethod,
-        orderDate: new Date(),
-      });
-      alert('Order placed!');
-      setName('');
-      setMobile('');
-      setEmail('');
-      setAddress('');
-      setPincode('');
-      setPaymentMethod('');
-      navigate('/profile');
-    } catch (error) {
-      console.error('Error placing order:', error);
-    }
-  };
+  //   try {
+  //     await axios.post('http://localhost:6001/api/orders/place-cart-order', {
+  //       userId,
+  //       name,
+  //       mobile,
+  //       email,
+  //       address,
+  //       pincode,
+  //       paymentMethod,
+  //       orderDate: new Date(),
+  //     });
+  //     alert('Order placed!');
+  //     setName('');
+  //     setMobile('');
+  //     setEmail('');
+  //     setAddress('');
+  //     setPincode('');
+  //     setPaymentMethod('');
+  //     navigate('/profile');
+  //   } catch (error) {
+  //     console.error('Error placing order:', error);
+  //   }
+  // };
 
   if (loading) return <p style={{ textAlign: 'center', marginTop: '20vh' }}>Loading cart...</p>;
 
@@ -114,7 +114,7 @@ const Cart = () => {
         {cartItems.length === 0 && <p style={{ textAlign: 'center', marginTop: '20vh' }}>Cart is empty...</p>}
 
         {cartItems.map((item) => (
-          <div className="cartItem" key={item._id}>
+          <div className="cartItem" key={item.id}>
             <img src={item.mainImg} alt={item.title} />
             <div className="cartItem-data">
               <h4>{item.title}</h4>
@@ -127,16 +127,16 @@ const Cart = () => {
                 </span>
                 <span>
                   <p>
-                    <b>Quantity: </b> {item.quantity}
+                    <b>Quantity: </b> {item.qty}
                   </p>
                 </span>
               </div>
               <span>
                 <h5>
-                  <b>Price: </b> &#8377; {parseInt(item.price - (item.price * item.discount) / 100) * item.quantity}
+                  <b>Price: </b> &#8377; {parseInt(item.price - (item.price * item.discount)) * item.qty}
                 </h5>
               </span>
-              <button className="btn" onClick={() => removeItem(item._id)}>
+              <button className="btn" onClick={() => { }}>
                 Remove
               </button>
             </div>
@@ -224,7 +224,7 @@ const Cart = () => {
               <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">
                 cancel
               </button>
-              <button type="button" className="btn btn-primary" data-bs-dismiss="modal" onClick={placeOrder}>
+              <button type="button" className="btn btn-primary" data-bs-dismiss="modal" onClick={() => { }}>
                 Order
               </button>
             </div>

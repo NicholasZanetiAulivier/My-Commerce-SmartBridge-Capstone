@@ -17,18 +17,20 @@ import NewProduct from './pages/admin/NewProduct';
 import UpdateProduct from './pages/admin/UpdateProduct';
 import GeneralContextProvider from './context/GeneralContext';
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import { createTokenHeader, fetchApi } from './utils/fetchUtils';
 
 function App() {
   const [cartItems, setCartItems] = useState([]);
 
   const fetchCart = async () => {
-    try {
-      const { data } = await axios.get("http://localhost:6001/api/cart/fetch-cart");
-      setCartItems(data);
-    } catch (err) {
-      console.error("Error fetching cart:", err);
-    }
+    const results = await fetchApi('/cart', 'GET', null, createTokenHeader()).then(res => {
+      console.log(res);
+      if (res.ok)
+        return res.json();
+      else
+        throw new Error(res.text());
+    }).catch((e) => ({ cart: [] }));
+    setCartItems(results.cart);
   };
 
   useEffect(() => {
@@ -37,26 +39,26 @@ function App() {
 
   return (
     <GeneralContextProvider>
-    <div className="App">
-      <Navbar />
+      <div className="App">
+        <Navbar />
 
-      <Routes>
-        <Route path='/auth' element={<Authentication />} />
-        <Route exact path='' element={<Home />} />
-        <Route path='/cart' element={<Cart cartItems={cartItems} setCartItems={setCartItems} fetchCart={fetchCart} />} />
-        <Route path='/product/:id' element={<IndividualProduct />} />
-        <Route path='/category/:category' element={<CategoryProducts />} />
-        <Route path='/profile' element={<Profile />} />
-        
-        <Route path='/admin' element={<Admin />} />
-        <Route path='/all-products' element={<AllProducts />} />
-        <Route path='/all-users' element={<AllUsers />} />
-        <Route path='/all-orders' element={<AllOrders />} />
-        <Route path='/new-product' element={<NewProduct />} />
-        <Route path='/update-product/:id' element={<UpdateProduct />} />
-      </Routes>
-    </div>
-  </GeneralContextProvider>
+        <Routes>
+          <Route path='/auth' element={<Authentication />} />
+          <Route exact path='' element={<Home />} />
+          <Route path='/cart' element={<Cart cartItems={cartItems} setCartItems={setCartItems} fetchCart={fetchCart} />} />
+          <Route path='/product/:id' element={<IndividualProduct />} />
+          <Route path='/category/:category' element={<CategoryProducts />} />
+          <Route path='/profile' element={<Profile />} />
+
+          <Route path='/admin' element={<Admin />} />
+          <Route path='/all-products' element={<AllProducts />} />
+          <Route path='/all-users' element={<AllUsers />} />
+          <Route path='/all-orders' element={<AllOrders />} />
+          <Route path='/new-product' element={<NewProduct />} />
+          <Route path='/update-product/:id' element={<UpdateProduct />} />
+        </Routes>
+      </div>
+    </GeneralContextProvider>
   );
 }
 

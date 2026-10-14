@@ -2,10 +2,10 @@ import React, { useContext, useEffect, useState } from 'react'
 import '../../styles/Profile.css'
 import { GeneralContext } from '../../context/GeneralContext'
 import axios from 'axios';
- 
+
 const Profile = () => {
 
-  const {logout} = useContext(GeneralContext);
+  const { logout } = useContext(GeneralContext);
 
   const userId = localStorage.getItem('userId');
   const username = localStorage.getItem('username');
@@ -14,64 +14,64 @@ const Profile = () => {
   const [orders, setOrders] = useState([]);
 
 
-  useEffect(()=>{
-    fetchOrders();
-  },[])
+  useEffect(() => {
+    // fetchOrders();
+  }, [])
 
-  const fetchOrders = async () =>{
-    await axios.get(`http://localhost:6001/api/orders/fetch-orders`).then(
-      (response)=>{
-        setOrders(response.data.reverse());
-      }
-    )
-  }
+  // const fetchOrders = async () =>{
+  //   await axios.get(`http://localhost:6001/api/orders/fetch-orders`).then(
+  //     (response)=>{
+  //       setOrders(response.data.reverse());
+  //     }
+  //   )
+  // }
 
 
-const cancelOrder = async (orderId) => {
-  if (!orderId) {
-    alert("Order ID is required");
-    return;
-  }
+  // const cancelOrder = async (orderId) => {
+  //   if (!orderId) {
+  //     alert("Order ID is required");
+  //     return;
+  //   }
 
-  try {
-    const { data } = await axios.put(
-      "http://localhost:6001/api/orders/cancel-order",
-      { orderId } // sending orderId in request body
-    );
+  //   try {
+  //     const { data } = await axios.put(
+  //       "http://localhost:6001/api/orders/cancel-order",
+  //       { orderId } // sending orderId in request body
+  //     );
 
-    console.log("Order cancelled:", data);
-    alert("Order cancelled successfully!");
+  //     console.log("Order cancelled:", data);
+  //     alert("Order cancelled successfully!");
 
-    // Update local state to remove cancelled order
-    setOrders((prevOrders) =>
-      prevOrders.map((order) =>
-        order._id === orderId ? { ...order, orderStatus: "Cancelled" } : order
-      )
-    );
+  //     // Update local state to remove cancelled order
+  //     setOrders((prevOrders) =>
+  //       prevOrders.map((order) =>
+  //         order._id === orderId ? { ...order, orderStatus: "Cancelled" } : order
+  //       )
+  //     );
 
-  } catch (error) {
-    console.error("Cancel order frontend error:", error);
-    alert(error.response?.data?.message || "Error cancelling order");
-  }
-};
-  return ( 
+  //   } catch (error) {
+  //     console.error("Cancel order frontend error:", error);
+  //     alert(error.response?.data?.message || "Error cancelling order");
+  //   }
+  // };
+  return (
     <div className="profilePage">
-      
+
       <div className="profileCard">
 
-          <span>
-            <h5>Username: </h5>
-            <p>{username}</p>
-          </span>
-          <span>
-            <h5>Email: </h5>
-            <p>{email}</p>
-          </span>
-          <span>
-            <h5>Orders: </h5>
-            <p>{orders.length}</p>
-          </span>
-          <button className='btn btn-danger' onClick={logout}>Logout</button>
+        <span>
+          <h5>Username: </h5>
+          <p>{username}</p>
+        </span>
+        <span>
+          <h5>Email: </h5>
+          <p>{email}</p>
+        </span>
+        <span>
+          <h5>Orders: </h5>
+          <p>{orders.length}</p>
+        </span>
+        <button className='btn btn-danger' onClick={logout}>Logout</button>
 
       </div>
 
@@ -79,8 +79,8 @@ const cancelOrder = async (orderId) => {
         <h3>Orders</h3>
         <div className="profileOrders">
 
-          {orders.map((order)=>{
-            return(
+          {orders.map((order) => {
+            return (
               <div className="profileOrder" key={order._id}>
                 <img src={order.mainImg} alt="" />
                 <div className="profileOrder-data">
@@ -89,28 +89,28 @@ const cancelOrder = async (orderId) => {
                   <div>
                     <span><p><b>Size: </b> {order.size}</p></span>
                     <span><p><b>Quantity: </b> {order.quantity}</p></span>
-                    <span><p><b>Price: </b> &#8377; {parseInt(order.price - (order.price * order.discount)/100) * order.quantity}</p></span>
+                    <span><p><b>Price: </b> &#8377; {parseInt(order.price - (order.price * order.discount) / 100) * order.quantity}</p></span>
                     <span><p><b>Payment method: </b> {order.paymentMethod}</p></span>
                   </div>
                   <div>
                     <span><p><b>Address: </b> {order.address}</p></span>
                     <span><p><b>Pincode: </b> {order.pincode}</p></span>
-                    <span><p><b>Ordered on: </b> {order.orderDate.slice(0,10)}</p></span>
-                   </div>
+                    <span><p><b>Ordered on: </b> {order.orderDate.slice(0, 10)}</p></span>
+                  </div>
                   <div>
                     <span><p><b>Order status: </b> {order.orderStatus}</p></span>
                   </div>
                   {order.orderStatus === 'order placed' || order.orderStatus === 'In-transit' ?
-                  
-                    <button className='btn btn-danger' onClick={()=> cancelOrder(order._id)}>Cancel</button>
-                  :
-                  ""}
+
+                    <button className='btn btn-danger' onClick={() => { }}>Cancel</button>
+                    :
+                    ""}
                 </div>
               </div>
             )
           })}
 
-            
+
         </div>
       </div>
 
