@@ -1,3 +1,4 @@
+const { ObjectId } = require('mongodb');
 const { User, Token } = require('../../../database');
 
 async function findUserByEmailOrUsername(email, username) {
@@ -19,7 +20,7 @@ async function getToken(token) {
 }
 
 async function getUserById(userId) {
-    return User.findOne({ _id: userId });
+    return User.findOne({ _id: new ObjectId(userId) });
 }
 
 async function searchAndPage(search, offset, limit) {

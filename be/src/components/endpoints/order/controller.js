@@ -1,5 +1,7 @@
 const service = require('./service');
 const { checkInteger } = require('../../../utils/checks');
+const validate = require('../../middlewares/validator');
+const { processJoiValidationError } = require('../../../core/errors');
 
 async function hello(req, res, next) {
     try {
@@ -56,7 +58,22 @@ async function getHistory(req, res, next) {
     }
 }
 
+async function createOrder(req, res, next) {
+    try {
+        const { error, value } = validate.orderCreation(req.body);
+        processJoiValidationError(error);
+        const { name, email, mobile, address, postCode, paymentMethod, } = value;
+
+        const { id } = req.user;
+        const results = await service.createOrder(id, name, email, mobile, address, postCode, paymentMethod,);
+        return res.status(201).json(results);
+    } catch (e) {
+        return next(e);
+    }
+}
+
 module.exports = {
     hello,
-    getHistory
+    getHistory,
+    createOrder
 }

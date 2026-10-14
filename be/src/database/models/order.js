@@ -11,13 +11,13 @@ module.exports = (db) =>
             email: String,
             mobile: String,
             address: String,
-            pinCode: String,
+            postCode: String,
             products: {
                 type: [{
                     productId: ObjectId,
                     qty: Number,
-                    size: String,
-                    price: Number,
+                    unitPrice: Number,
+                    netPrice: Number,
                     discount: Number
                 }],
                 min: 1,

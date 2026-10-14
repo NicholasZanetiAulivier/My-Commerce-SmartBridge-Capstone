@@ -1,5 +1,6 @@
 const { errorResponder, errors } = require('../../../core/errors');
 const repository = require('./repository');
+const userRepository = require('../user/repository');
 
 async function hello() {
     const results = await repository.hello();
@@ -10,7 +11,6 @@ async function getHistory(id, offset, limit) {
     let results;
     try {
         results = await repository.getOrderListByUid(id, offset, limit);
-        console.log(results);
     } catch (e) {
         console.log(e);
         throw errorResponder(errors.NOT_FOUND, "User not found");
@@ -25,12 +25,13 @@ async function getHistory(id, offset, limit) {
                         email: e.email,
                         mobile: e.mobile,
                         address: e.address,
-                        pincode: e.pinCode
+                        postCode: e.postCode
                     },
                     products: e.products.map((p) => ({
                         productId: p.productId,
                         qty: p.qty,
-                        size: p.size,
+                        unitPrice: p.unitPrice,
+                        netPrice: p.netPrice,
                         price: p.price,
                         discount: p.discount
                     })),
@@ -46,7 +47,28 @@ async function getHistory(id, offset, limit) {
     };
 }
 
+async function createOrder(id, name, email, mobile, address, postCode, paymentMethod,) {
+    let u;
+    try {
+        u = await userRepository.getUserById(id);
+        if (!u)
+            throw Error();
+    } catch (e) {
+        throw errorResponder(errors.NOT_FOUND, "User not found");
+    }
+
+    if (!u.cart || u.cart.length < 1)
+        throw errorResponder(errors.NOT_FOUND, "User doesn't have a cart");
+    await repository.transactionOrdering(u, name, email, mobile, address, postCode, paymentMethod,);
+    return {
+        message: "Successfully created an order!",
+        status: 'pending'
+    }
+
+}
+
 module.exports = {
     hello,
-    getHistory
+    getHistory,
+    createOrder
 }

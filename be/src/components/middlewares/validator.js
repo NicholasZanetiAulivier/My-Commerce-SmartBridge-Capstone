@@ -84,6 +84,15 @@ const cartQuantitySchema = Joi.object({
     qty: Joi.number().integer().min(1).required()
 });
 
+const orderCreationSchema = Joi.object({
+    name: Joi.string().required(),
+    email: Joi.string().required(),
+    mobile: Joi.string().required(),
+    address: Joi.string().required(),
+    postCode: Joi.string().required(),
+    paymentMethod: Joi.string().required(),
+});
+
 // const imageUrlSchema = Joi.string()
 //   .uri({
 //     scheme: ["https"],
@@ -251,5 +260,8 @@ module.exports = {
 
     //Cart
     cartAdd: validator(cartAddSchema),
-    cartQuantity: validator(cartQuantitySchema)
+    cartQuantity: validator(cartQuantitySchema),
+
+    //Order
+    orderCreation: validator(orderCreationSchema)
 };
