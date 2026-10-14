@@ -6,11 +6,4 @@ function checkInteger(i, minVal, maxVal, defau) {
     return Math.max(Math.min(maxVal, i || defau), minVal)
 }
 
-function checkUserParamsTokenID(userId, paramUserId) {
-    if (!(userId === paramUserId)) {
-        throw errorResponder(errors.INVALID_CREDENTIALS, "User tidak memiliki hak akses untuk data yang diminta!");
-    }
-    return true;
-}
-
-module.exports = { checkInteger, checkUserParamsTokenID };
+module.exports = { checkInteger };

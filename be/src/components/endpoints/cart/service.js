@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 const { errorResponder, errors } = require('../../../core/errors');
 const repository = require('./repository');
 const productRepository = require('../product/repository');

@@ -1,7 +1,5 @@
-// const { errorResponder, errors } = require('../../../core/errors');
 const service = require('./service');
-// const jwt = require('jsonwebtoken');
-// const bcrypt = require('bcrypt');
+const { checkInteger } = require('../../../utils/checks');
 
 async function hello(req, res, next) {
     try {
@@ -42,6 +40,23 @@ async function hello(req, res, next) {
     }
 }
 
+async function getHistory(req, res, next) {
+    try {
+        let { offset, limit } = req.query;
+
+        offset = checkInteger(offset, 0, Number.POSITIVE_INFINITY, 0);
+        limit = checkInteger(limit, 0, 100, 10);
+
+        const { id } = req.user;
+
+        const results = await service.getHistory(id, offset, limit);
+        return res.status(200).json(results);
+    } catch (e) {
+        return next(e);
+    }
+}
+
 module.exports = {
-    hello
+    hello,
+    getHistory
 }

@@ -9,7 +9,7 @@ route.post('/', protect, controller.hello);
 
 route.patch('/set-quantity', protect, controller.hello);
 route.put('/cancel', protect, controller.hello);
-route.get('/', protect, controller.hello);
+route.get('/', protect, controller.getHistory);
 
 route.put('/status', protect, controller.hello);
 

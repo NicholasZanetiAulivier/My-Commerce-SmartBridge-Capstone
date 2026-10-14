@@ -1,22 +1,6 @@
 const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 
-async function hashOtp(plaintextOtp) {
-  const saltRounds = 10; // biar server gk meledak
-
-  const hashedOtp = await new Promise((resolve, reject) => {
-    bcrypt.hash(plaintextOtp, saltRounds, (err, hash) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(hash);
-      }
-    });
-  });
-
-  return hashedOtp;
-}
-
 async function hashPassword(plaintextPassword) {
   const saltRounds = 12;
 
@@ -51,7 +35,6 @@ async function compareOpaqueStringHash(string, hashedString) {
 module.exports = {
   hashPassword,
   passwordMatched,
-  hashOtp,
   hashOpaqueString,
   compareOpaqueStringHash
 };
