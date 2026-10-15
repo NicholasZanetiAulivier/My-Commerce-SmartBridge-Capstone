@@ -58,7 +58,7 @@ const productSchema = Joi.object({
     carousel: Joi.array().items(Joi.string()).default([]),
     category: Joi.string().required(),
     sizes: Joi.array().items(Joi.string()),
-    gender: Joi.string().lowercase().valid('man', 'woman', 'non-binary'),
+    gender: Joi.string().lowercase().valid('men', 'women', 'unisex'),
     price: Joi.number().min(0).required().default(0),
     discount: Joi.number()
 });

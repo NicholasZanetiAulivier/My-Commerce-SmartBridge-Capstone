@@ -26,7 +26,7 @@ const Home = () => {
   //   }
   // };
 
-  const fetchCategories = async () => {
+  async function fetchCategories() {
     await fetchApi('/product/categories').then(async res => {
       if (res.status === 200) {
         setCategories((await res.json()).categories);
@@ -60,7 +60,7 @@ const Home = () => {
 
 
       <div id='products-body'></div>
-      <Products category='all' />
+      <Products category={categories} />
 
 
       <Footer />
