@@ -47,7 +47,6 @@ const Products = ({ category }) => {
                 throw new Error();
             }
         }).catch(e => { throw e });
-        console.log(body);
         setProducts(body.products);
     }
 
@@ -60,7 +59,7 @@ const Products = ({ category }) => {
                     {products ? products.map((product) => {
                         return (
                             <div className='product-item' key={product.id} >
-                                <div className="product" onClick={() => navigate(`/product/${product._id}`)}>
+                                <div className="product" onClick={() => navigate(`/product/${product.id}`)}>
                                     <img src={product.mainImg} alt="" />
                                     <div className="product-data">
                                         <h6>{product.title}</h6>

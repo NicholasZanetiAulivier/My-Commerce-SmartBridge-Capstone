@@ -12,7 +12,7 @@ const Navbar = () => {
 
   const navigate = useNavigate();
 
-  const usertype = localStorage.getItem('userType');
+  const usertype = localStorage.getItem('type');
   const username = localStorage.getItem('username');
 
   const { cartCount, logout } = useContext(GeneralContext);
@@ -72,7 +72,7 @@ const Navbar = () => {
 
         : <>
 
-          {usertype === 'customer' ?
+          {usertype === 'user' ?
 
             <div className="navbar">
               <h3 onClick={() => navigate('')}>ShopEZ</h3>

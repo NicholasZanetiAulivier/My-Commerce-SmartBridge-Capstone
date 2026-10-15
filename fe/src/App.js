@@ -34,7 +34,8 @@ function App() {
   };
 
   useEffect(() => {
-    fetchCart();
+    if (localStorage.getItem('type') === 'user')
+      fetchCart();
   }, []);
 
   return (

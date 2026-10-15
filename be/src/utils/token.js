@@ -27,7 +27,6 @@ const cookieOptions = {
   httpOnly: true,
   secure: true,
   sameSite: "none",
-  partitioned: true,
   path: "/",
   expires: new Date(Date.now() + REFRESH_TOKEN_EXPIRY_SECONDS * 1000),
 };

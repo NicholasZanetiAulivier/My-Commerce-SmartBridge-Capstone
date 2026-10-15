@@ -12,7 +12,7 @@ const GeneralContextProvider = ({ children }) => {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [type, setUsertype] = useState('');
+  const [type, setType] = useState('');
 
   const [productSearch, setProductSearch] = useState('');
   const [cartCount, setCartCount] = useState(0);
@@ -31,7 +31,7 @@ const GeneralContextProvider = ({ children }) => {
 
   const fetchCartCount = async () => {
     const userId = localStorage.getItem('userId');
-    if (userId) {
+    if (userId && localStorage.getItem('type') === 'user') {
       try {
         let headers = createTokenHeader();
         const response = await fetchApi('/cart', 'GET', null, headers).then(res => res.json());
@@ -58,42 +58,49 @@ const GeneralContextProvider = ({ children }) => {
         password: password
       };
 
-      const res = await fetchApi('/user/login', 'POST', loginInputs);
+      const body = await fetchApi('/user/login', 'POST', loginInputs).then(res => {
+        if (res.ok) return res.json();
+        else throw new Error();
+      });
 
-      localStorage.setItem('token', res.data.accessToken);
-      localStorage.setItem('userId', res.data.id);
-      localStorage.setItem('type', res.data.type);
-      localStorage.setItem('username', res.data.username);
-      localStorage.setItem('email', res.data.email);
+      localStorage.setItem('token', body.accessToken);
+      localStorage.setItem('userId', body.id);
+      localStorage.setItem('type', body.type);
+      localStorage.setItem('username', body.username);
+      localStorage.setItem('email', body.email);
 
-      if (res.data.type === 'user') {
+      if (body.type === 'user') {
         navigate('/');
-      } else if (res.data.type === 'admin') {
+      } else if (body.type === 'admin') {
         navigate('/admin');
       }
-      localStorage.set('logout', false);
+      localStorage.setItem('logout', false);
     } catch (err) {
       console.error("Login failed:", err.response?.data || err.message);
       alert(err.response?.data?.message || "Login failed!!");
     }
   };
 
-  const inputs = { username, email, type, password };
   const register = async () => {
+    const inputs = { username, email, type, password };
+    console.log(inputs);
     try {
-      const res = await fetchApi('/user/register', 'POST', inputs);
+      const body = await fetchApi('/user/register', 'POST', inputs).then(res => {
+        if (res.ok) return res.json();
+        else throw new Error();
+      });
 
-      localStorage.setItem('userId', res.data.id);
-      localStorage.setItem('type', res.data.type);
-      localStorage.setItem('username', res.data.username);
-      localStorage.setItem('email', res.data.email);
+      localStorage.setItem('userId', body.id);
+      localStorage.setItem('type', body.type);
+      localStorage.setItem('username', body.username);
+      localStorage.setItem('email', body.email);
 
-      if (res.data.type === 'user') {
+      if (body.type === 'user') {
         navigate('/');
-      } else if (res.data.type === 'admin') {
+      } else if (body.type === 'admin') {
         navigate('/admin');
       }
-      localStorage.set('logout', false);
+      localStorage.setItem('logout', false);
     } catch (err) {
       alert("Registration failed!!");
       console.error(err.response?.data || err.message);
@@ -102,9 +109,13 @@ const GeneralContextProvider = ({ children }) => {
 
   const refresh = async () => {
     if (localStorage.get('logout')) return;
-    const res = await fetchApi('/user/refresh', 'POST');
+    const res = await fetchApi('/user/refresh', 'POST').then(res => {
+      console.log(res);
+      if (res.ok) return res.json();
+      else navigate('/');
+    });;
 
-    localStorage.setItem('token', res.data.accessToken);
+    localStorage.setItem('token', res.accessToken);
   }
 
   const logout = () => {
@@ -120,7 +131,7 @@ const GeneralContextProvider = ({ children }) => {
         username, setUsername,
         email, setEmail,
         password, setPassword,
-        usertype: type, setUsertype,
+        usertype: type, setType,
         productSearch, setProductSearch,
         handleSearch,
         cartCount,

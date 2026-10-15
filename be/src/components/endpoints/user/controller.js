@@ -21,6 +21,7 @@ async function register(req, res, next) {
 
 async function login(req, res, next) {
     try {
+        console.log(req.body);
         const { error, value } = validate.login(req.body);
         processJoiValidationError(error);
         const { email, password } = value;

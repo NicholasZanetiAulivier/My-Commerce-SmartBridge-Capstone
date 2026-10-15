@@ -1,6 +1,16 @@
 export async function fetchApi(route, method = 'GET', body = undefined, headers = undefined) {
     const url = "http://localhost:5000/api" + route;
-    const config = { method, body: body ? JSON.stringify(body) : undefined, headers: headers ? headers.toString() : undefined };
+    const config = { method, body: body ? JSON.stringify(body) : undefined };
+    if (body) {
+        if (!headers)
+            headers = new Headers();
+        headers.set('Content-Type', 'application/json');
+    }
+
+    if (headers instanceof Headers) {
+        config['headers'] = headers;
+    }
+    console.log(url, config);
     if (headers instanceof Headers && headers.get('Authorization')) {
         try {
             const res = await fetch(url, config).then(res => {
@@ -9,11 +19,23 @@ export async function fetchApi(route, method = 'GET', body = undefined, headers 
             }).catch(e => { throw e });
             return res;
         } catch (e) {
-            await fetchApi("/user/refresh", 'POST').then(res => {
-                if (res.ok) localStorage.setItem('token', res.data.accessToken);
+            console.log(e);
+            await fetch("http://localhost:5000/api/user/refresh", { method: 'POST' }).then(res => {
+                if (res.ok) {
+                    localStorage.setItem('token', res.data.accessToken);
+                }
                 else throw new Error("User can't refresh");
+            }).catch(e => {
+                // localStorage.removeItem('token');
+                // localStorage.removeItem('userId');
+                // localStorage.removeItem('type');
+                // localStorage.removeItem('username');
+                // localStorage.removeItem('email');
+                localStorage.setItem('logout', true);
             });
         }
+        headers.set('Authorization', 'Bearer ' + localStorage.getItem('token'));
+        config.headers = headers.toString();
     }
     return await fetch(url, config).then(res => {
         if (res.ok) return res;

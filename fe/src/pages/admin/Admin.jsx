@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import '../../styles/Admin.css'
 import { useNavigate } from 'react-router-dom'
-import axios from 'axios';
+import { createTokenHeader, fetchApi } from '../../utils/fetchUtils';
 
 const Admin = () => {
 
@@ -12,48 +12,40 @@ const Admin = () => {
   const [ordersCount, setOrdersCount] = useState(0);
 
   useEffect(() => {
-    if (localStorage.getItem('userType') === 'admin') {
+    if (localStorage.getItem('type') === 'admin') {
       navigate('/admin')
     }
   }, [localStorage])
 
 
-  // useEffect(()=>{
-  //   fetchCountData();
-  // }, [])
+  useEffect(() => {
+    fetchCountData();
+  }, [])
 
-  // const fetchCountData = async() =>{
-  //   await axios.get('http://localhost:6001/api/users/fetch-users').then(
-  //     (response)=>{
-  //       setUserCount(response.data.length - 1);
-  //     }
-  //   )
-  //   await axios.get('http://localhost:6001/api/products/fetch-products').then(
-  //     (response)=>{
-  //       setProductCount(response.data.length);
-  //     }
-  //   )
-  //   await axios.get('http://localhost:6001/api/orders/fetch-orders').then(
-  //     (response)=>{
-  //       setOrdersCount(response.data.length);
-  //     }
-  //   )
+  async function fetchCountData() {
+    try {
+      let body = await fetchApi('/user', 'GET', null, createTokenHeader()).then(res => {
+        if (res.ok) return res.json();
+        else throw new Error();
+      }).catch(e => { throw e });
+      setUserCount(body.count);
 
-  // }
+      body = await fetchApi('/product', 'GET', null, createTokenHeader()).then(res => {
+        if (res.ok) return res.json();
+        else throw new Error();
+      }).catch(e => { throw e });
+      setProductCount(body.count);
 
+      body = await fetchApi('/order', 'GET', null, createTokenHeader()).then(res => {
+        if (res.ok) return res.json();
+        else throw new Error();
+      }).catch(e => { throw e });
+      setOrdersCount(body.count);
+    } catch (e) {
+      // navigate('/');
+    }
 
-
-
-
-  const [banner, setBanner] = useState('');
-  // const updateBanner = async() =>{
-  //   await axios.post('http://localhost:6001/update-banner', {banner}).then(
-  //     (response)=>{
-  //       alert("Banner updated");
-  //       setBanner('');
-  //     }
-  //   )
-  // }
+  }
 
 
 
@@ -92,18 +84,6 @@ const Admin = () => {
           <button onClick={() => navigate('/new-product')}>Add now</button>
         </div>
       </div>
-
-      <div>
-        <div className="admin-banner-input admin-home-card">
-          <h5>Update banner</h5>
-          <div className="form-floating">
-            <input type="text" className="form-control" id="floatingURLInput" value={banner} onChange={(e) => setBanner(e.target.value)} />
-            <label htmlFor="floatingURLInput" >Banner url</label>
-          </div>
-          <button onClick={() => { }}>Update</button>
-        </div>
-      </div>
-
 
     </div>
   )
