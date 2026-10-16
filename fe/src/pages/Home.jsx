@@ -4,7 +4,7 @@ import Products from '../components/Products'
 import Footer from '../components/Footer'
 import { useNavigate } from 'react-router-dom'
 import { fetchApi } from '../utils/fetchUtils'
-import { Container } from 'react-bootstrap'
+import { Card, CardImg, Container } from 'react-bootstrap'
 import { BsLine } from 'react-icons/bs'
 import ENV from '../config/env'
 
@@ -35,10 +35,12 @@ const Home = () => {
 
         {
           categories ?
-            categories.map((c) => (<div className="home-category-card" onClick={() => navigate('/category/' + c)}>
-              <img src={ENV.PLACEHOLD_IMG} alt="" />
-              <h5>{c}</h5>
-            </div>))
+            categories.map((c) => (
+              <Card onClick={() => navigate('/category/' + c)} className='col-1' key={c}>
+                <CardImg src={ENV.PLACEHOLD_IMG} />
+                <div className='h5 align-self-center'>{c}</div>
+              </Card>
+            ))
             : null
         }
       </Container>

@@ -22,7 +22,7 @@ const Login = ({ setIsLogin }) => {
         </Form.Group>
         <Form.Group className="mb-3" controlId="formBasicPassword">
           <Form.Label>Password</Form.Label>
-          <Form.Control type="password" placeholder="Password" onChange={(e) => setPassword(e)} value={password} required />
+          <Form.Control type="password" placeholder="Password" onChange={(e) => setPassword(e.target.value)} value={password} required />
         </Form.Group>
         <Button variant="primary" type="submit">
           Submit

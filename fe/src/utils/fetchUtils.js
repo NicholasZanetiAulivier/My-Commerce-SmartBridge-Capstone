@@ -15,7 +15,7 @@ export async function fetchApi(route, method = 'GET', body = undefined, headers 
     if (headers instanceof Headers && headers.get('Authorization')) {
         try {
             const res = await fetch(url, config).then(res => {
-                if (res.ok) return res;
+                if (res.status !== 401) return res;
                 else throw new Error(url + ":", "Failed");
             }).catch(e => { throw e });
             return res;

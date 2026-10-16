@@ -76,6 +76,7 @@ const GeneralContextProvider = ({ children }) => {
       }
       localStorage.setItem('logout', false);
     } catch (err) {
+      console.error(err);
       console.error("Login failed:", err.response?.data || err.message);
       alert(err.response?.data?.message || "Login failed!!");
     }

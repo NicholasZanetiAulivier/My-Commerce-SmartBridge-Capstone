@@ -1,11 +1,8 @@
-import React, { useContext, useEffect, useState } from 'react'
-import { BsCart3, BsPersonCircle } from 'react-icons/bs'
-import { FcSearch } from 'react-icons/fc'
+import React, { useContext, useState } from 'react'
 import '../styles/Navbar.css'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { GeneralContext } from '../context/GeneralContext'
-import { ImCancelCircle } from 'react-icons/im'
-import { Badge, Button, Container, Form, Navbar, NavLink } from 'react-bootstrap'
+import { Badge, Button, Container, Form, Navbar } from 'react-bootstrap'
 
 const NavigationBar = () => {
 
@@ -27,7 +24,7 @@ const NavigationBar = () => {
 
     <Navbar expand="lg" className={'px-2' + (type === 'admin' ? ' bg-dark' : '')} >
       <Container fluid>
-        <Navbar.Brand className='fw-bolder text-white' onClick={() => navigate('/')} style={{ cursor: 'pointer' }}> ShopEz-X</Navbar.Brand>
+        <Navbar.Brand className='fw-bolder text-white' onClick={() => navigate('/')} style={{ cursor: 'pointer' }}> ShopEz-X {username ? ": " + username : null}</Navbar.Brand>
         <div>
           <Navbar.Toggle aria-controls='basic-navbar-nav' />
           <Navbar.Collapse id='basic-navbar-nav'>
