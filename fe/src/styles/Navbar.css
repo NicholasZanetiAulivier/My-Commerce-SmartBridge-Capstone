@@ -1,5 +1,5 @@
-.navbar{
-    height: 12vh;
+.navbar {
+    height: 7vh;
     background-color: #504aec;
     display: flex;
     align-items: center;
@@ -9,7 +9,7 @@
     z-index: 999;
 }
 
-.navbar h3{
+.navbar h3 {
 
     margin: 0;
     color: aliceblue;
@@ -17,7 +17,7 @@
     cursor: pointer;
 }
 
-.nav-content{
+.nav-content {
 
     display: flex;
     width: 70%;
@@ -26,14 +26,14 @@
     gap: 20px;
 }
 
-.nav-search{
+.nav-search {
 
     width: 70%;
     display: flex;
     align-items: center;
 }
 
-.nav-search input{
+.nav-search input {
     width: 100%;
     outline: none;
     padding: 10px 10px;
@@ -43,18 +43,19 @@
     position: relative;
     left: 2rem;
 }
-.nav-search input:focus{
+
+.nav-search input:focus {
     outline: none;
 }
 
-.nav-search-icon{
-    font-size: 2rem; 
+.nav-search-icon {
+    font-size: 2rem;
     position: relative;
-    left: -0.5rem; 
+    left: -0.5rem;
     cursor: pointer;
 }
 
-.search-result-data{
+.search-result-data {
 
     position: absolute;
     top: 10vh;
@@ -66,12 +67,12 @@
     color: rgb(33, 56, 96);
 }
 
-.search-result-data-close-btn{
+.search-result-data-close-btn {
     margin-left: 20px;
     cursor: pointer;
 }
 
-.nav-content button{
+.nav-content button {
 
     margin: 0 30px 0 0;
     padding: 0;
@@ -81,7 +82,8 @@
     border-radius: 0.5rem;
     font-weight: 600;
 }
-.nav-content button:hover{
+
+.nav-content button:hover {
 
     border: 1px solid rgba(240, 248, 255, 0.317);
     color: rgb(255, 255, 255);
@@ -89,7 +91,7 @@
 
 }
 
-.nav-content-icons{
+.nav-content-icons {
     display: flex;
     align-items: center;
     justify-content: space-evenly;
@@ -98,12 +100,12 @@
     margin-right: 30px;
 }
 
-.nav-cart{
-display: flex;
+.nav-cart {
+    display: flex;
 
 }
 
-.nav-cart .cart-count{
+.nav-cart .cart-count {
     position: relative;
     top: -10px;
     /* color: aliceblue; */
@@ -111,17 +113,18 @@ display: flex;
     color: rgb(254, 218, 255);
 }
 
-.nav-profile{
+.nav-profile {
     display: flex;
     gap: 5px;
     cursor: pointer;
 }
-.nav-profile p{
+
+.nav-profile p {
     margin: 0;
     color: aliceblue;
 }
 
-.navbar-icons{
+.navbar-icons {
 
     font-size: 1.5rem;
     color: rgb(222, 228, 233);
@@ -130,7 +133,7 @@ display: flex;
 
 /* admin navbar */
 
-.navbar-admin{
+.navbar-admin {
     height: 12vh;
     background-color: #0e1420;
     display: flex;
@@ -142,7 +145,7 @@ display: flex;
     z-index: 999;
 }
 
-.navbar-admin h3{
+.navbar-admin h3 {
 
     margin: 0;
     color: rgba(240, 248, 255, 0.701);
@@ -150,20 +153,20 @@ display: flex;
     cursor: pointer;
 }
 
-.navbar-admin ul{
+.navbar-admin ul {
     display: flex;
     margin: 0;
     gap: 25px;
     margin-right: 3vw;
 }
 
-.navbar-admin ul li{
+.navbar-admin ul li {
     list-style: none;
     color: rgba(240, 248, 255, 0.701);
     cursor: pointer;
 }
 
-.navbar-admin ul li:hover{
-    
+.navbar-admin ul li:hover {
+
     color: rgb(235, 240, 245);
 }

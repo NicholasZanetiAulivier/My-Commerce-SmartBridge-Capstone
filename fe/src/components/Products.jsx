@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react'
 import '../styles/Products.css'
 import { useNavigate } from 'react-router-dom';
 import { fetchApi } from '../utils/fetchUtils';
+import { Card, CardGroup, Container } from 'react-bootstrap';
+import ENV from '../config/env';
 
 const Products = ({ category }) => {
 
@@ -51,30 +53,30 @@ const Products = ({ category }) => {
     }
 
     return (
-        <div className="products-container">
-            <div className="products-body">
-                <h3>All Products</h3>
-                <div className="products">
-
-                    {products ? products.map((product) => {
-                        return (
-                            <div className='product-item' key={product.id} >
-                                <div className="product" onClick={() => navigate(`/product/${product.id}`)}>
-                                    <img src={product.mainImg} alt="" />
-                                    <div className="product-data">
-                                        <h6>{product.title}</h6>
-                                        <p>{product.description.slice(0, 30) + '....'}</p>
-                                        <h5>Rp. {parseInt(product.price - (product.price * product.discount))} <s>{product.price}</s><p>( {product.discount * 100}% off)</p></h5>
-                                    </div>
-                                </div>
+        <Container fluid style={{ minHeight: "50vh", width: "100%" }}>
+            <div className='h3'>All Products</div>
+            <Container fluid className='d-flex gap-3 w-100 ' >
+                {products ? products.map((product) => {
+                    return (
+                        <Card onClick={() => navigate(`/product/${product.id}`)} key={product.id} className='col-2 border-0 p-2' style={{ height: 'fit-content' }}>
+                            <Card.Img src={product.mainImg ? product.mainImg : ENV.PLACEHOLD_IMG} />
+                            <div className='p-2 d-flex flex-column'>
+                                <div className='h4 fw-bold'>{product.title}</div>
+                                <Card.Subtitle>{product.description.slice(0, 30) + '....'}</Card.Subtitle>
+                                <Card.Text className='align-self-end fw-bold '>
+                                    Rp. {parseInt(product.price - (product.price * product.discount))}
+                                    <s>{product.price}</s>
+                                    {product.discount > 0 ?
+                                        <Card.Text className='h6 text-danger align-self-end'> {product.discount * 100}% off</Card.Text> :
+                                        null}
+                                </Card.Text>
                             </div>
-                        )
-                    }) : null}
 
-
-                </div>
-            </div>
-        </div>
+                        </Card>
+                    )
+                }) : null}
+            </Container>
+        </Container>
     )
 }
 

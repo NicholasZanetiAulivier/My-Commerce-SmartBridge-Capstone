@@ -1,9 +1,10 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext } from 'react'
 import { GeneralContext } from '../context/GeneralContext';
+import { Button, Container, Form } from 'react-bootstrap';
 
 const Register = ({ setIsLogin }) => {
 
-  const { setUsername, setEmail, setPassword, setType, register } = useContext(GeneralContext);
+  const { setUsername, setEmail, setPassword, setType, register, username, password, email, type } = useContext(GeneralContext);
 
 
   const handleRegister = async (e) => {
@@ -11,33 +12,34 @@ const Register = ({ setIsLogin }) => {
     await register()
   }
   return (
-    <form className="authForm">
-      <h2>Register</h2>
-      <div className="form-floating mb-3 authFormInputs">
-        <input type="text" className="form-control" id="floatingInput" placeholder="username"
-          onChange={(e) => setUsername(e.target.value)} />
-        <label htmlFor="floatingInput">Username</label>
-      </div>
-      <div className="form-floating mb-3 authFormInputs">
-        <input type="email" className="form-control" id="floatingEmail" placeholder="name@example.com"
-          onChange={(e) => setEmail(e.target.value)} />
-        <label htmlFor="floatingInput">Email address</label>
-      </div>
-      <div className="form-floating mb-3 authFormInputs">
-        <input type="password" className="form-control" id="floatingPassword" placeholder="Password"
-          onChange={(e) => setPassword(e.target.value)} />
-        <label htmlFor="floatingPassword">Password</label>
-      </div>
-      <select className="form-select form-select-lg mb-3" aria-label=".form-select-lg example"
-        onChange={(e) => setType(e.target.value.toLowerCase())}>
-        <option>Select Type</option>
-        <option value="user">User</option>
-        <option value="admin">Admin</option>
-      </select>
-
-      <button className="btn btn-primary" onClick={handleRegister}>Sign up</button>
-      <p>Already registered? <span onClick={() => setIsLogin(true)}>Login</span></p>
-    </form>
+    <Container style={{ width: '30%' }}>
+      <Form onSubmit={handleRegister}>
+        <Form.Group className="mb-3" controlId="formBasicUsername">
+          <Form.Label>Username</Form.Label>
+          <Form.Control type="text" placeholder="Enter username" onChange={(e) => setUsername(e.target.value)} value={username} required />
+        </Form.Group>
+        <Form.Group className="mb-3" controlId="formBasicEmail">
+          <Form.Label>Email address</Form.Label>
+          <Form.Control type="email" placeholder="Enter email" onChange={(e) => setEmail(e.target.value)} value={email} required />
+        </Form.Group>
+        <Form.Group className="mb-3" controlId="formBasicPassword">
+          <Form.Label>Password</Form.Label>
+          <Form.Control type="password" placeholder="Password" onChange={(e) => setPassword(e)} value={password} required />
+        </Form.Group>
+        <Form.Group className="mb-3" controlId="formBasicType">
+          <Form.Label>User type</Form.Label>
+          <Form.Select onChange={(e) => setType(e.target.value)} value={type ? type : null} required>
+            <option disabled>Select Type</option>
+            <option value="user">User</option>
+            <option value="admin">Admin</option>
+          </Form.Select>
+        </Form.Group>
+        <Button variant="primary" type="submit">
+          Submit
+        </Button>
+      </Form >
+      <p>Already registered? <Button variant='outline-info' onClick={() => setIsLogin(true)}>Login</Button></p>
+    </Container >
   )
 }
 export default Register;

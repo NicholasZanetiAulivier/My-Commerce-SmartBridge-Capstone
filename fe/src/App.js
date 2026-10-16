@@ -1,6 +1,6 @@
 import { Route, Routes } from 'react-router-dom';
 import './App.css';
-import Navbar from './components/Navbar'
+import NavigationBar from './components/Navbar'
 import Home from './pages/Home';
 import Authentication from './pages/Authentication';
 
@@ -18,6 +18,8 @@ import UpdateProduct from './pages/admin/UpdateProduct';
 import GeneralContextProvider from './context/GeneralContext';
 import { useState, useEffect } from 'react';
 import { createTokenHeader, fetchApi } from './utils/fetchUtils';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import { Container } from 'react-bootstrap';
 
 function App() {
   const [cartItems, setCartItems] = useState([]);
@@ -40,8 +42,9 @@ function App() {
 
   return (
     <GeneralContextProvider>
-      <div className="App">
-        <Navbar />
+      <Container fluid style={{ minHeight: '100vh', padding: 0 }}>
+
+        <NavigationBar />
 
         <Routes>
           <Route path='/auth' element={<Authentication />} />
@@ -58,7 +61,7 @@ function App() {
           <Route path='/new-product' element={<NewProduct />} />
           <Route path='/update-product/:id' element={<UpdateProduct />} />
         </Routes>
-      </div>
+      </Container>
     </GeneralContextProvider>
   );
 }

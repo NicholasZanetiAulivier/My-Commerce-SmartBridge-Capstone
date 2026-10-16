@@ -42,7 +42,7 @@ const Admin = () => {
       }).catch(e => { throw e });
       setOrdersCount(body.count);
     } catch (e) {
-      // navigate('/');
+      navigate('/');
     }
 
   }

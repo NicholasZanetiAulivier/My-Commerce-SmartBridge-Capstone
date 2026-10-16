@@ -131,7 +131,7 @@ const GeneralContextProvider = ({ children }) => {
         username, setUsername,
         email, setEmail,
         password, setPassword,
-        usertype: type, setType,
+        type: type, setType,
         productSearch, setProductSearch,
         handleSearch,
         cartCount,

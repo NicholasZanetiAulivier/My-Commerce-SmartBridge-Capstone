@@ -4,27 +4,20 @@ import Products from '../components/Products'
 import Footer from '../components/Footer'
 import { useNavigate } from 'react-router-dom'
 import { fetchApi } from '../utils/fetchUtils'
+import { Container } from 'react-bootstrap'
+import { BsLine } from 'react-icons/bs'
+import ENV from '../config/env'
 
 const Home = () => {
 
   const navigate = useNavigate();
 
-  // const [bannerImg, setBannerImg] = useState();
   const [categories, setCategories] = useState(undefined);
 
   useEffect(() => {
-    // fetchBanner();
+    if (localStorage.getItem('type') === 'admin') navigate('/admin');
     fetchCategories();
   }, [])
-
-  // const fetchBanner = async () => {
-  //   try {
-  //     const response = await axios.get("http://localhost:6001/api/banners"); // public route
-  //     setBannerImg(response.data);
-  //   } catch (err) {
-  //     console.error("Failed to fetch banner:", err.response?.data?.message || err.message);
-  //   }
-  // };
 
   async function fetchCategories() {
     await fetchApi('/product/categories').then(async res => {
@@ -37,34 +30,24 @@ const Home = () => {
   }
 
   return (
-    <div className="HomePage">
-      {/* <div className="home-banner">
-        {bannerImg ?
-          <img src={bannerImg} alt="" />
-          :
-          ""}
-      </div> */}
-
-      <div className="home-categories-container">
+    <Container fluid style={{ 'paddingTop': '10vh', paddingRight: 0, paddingLeft: 0 }}>
+      <Container fluid className='d-flex justify-content-center'>
 
         {
           categories ?
             categories.map((c) => (<div className="home-category-card" onClick={() => navigate('/category/' + c)}>
-              <img src="https://placehold.co/400/png" alt="" />
+              <img src={ENV.PLACEHOLD_IMG} alt="" />
               <h5>{c}</h5>
             </div>))
             : null
         }
-
-      </div>
-
-
-      <div id='products-body'></div>
-      <Products category={categories} />
-
-
+      </Container>
+      <hr className="hr px-5 mx-5" />
+      <Container fluid>
+        <Products category={categories} />
+      </Container>
       <Footer />
-    </div>
+    </Container>
   )
 }
 

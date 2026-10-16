@@ -5,126 +5,62 @@ import '../styles/Navbar.css'
 import { Link, useNavigate } from 'react-router-dom'
 import { GeneralContext } from '../context/GeneralContext'
 import { ImCancelCircle } from 'react-icons/im'
-import axios from 'axios'
+import { Badge, Button, Container, Form, Navbar, NavLink } from 'react-bootstrap'
 
-const Navbar = () => {
+const NavigationBar = () => {
 
 
   const navigate = useNavigate();
 
-  const usertype = localStorage.getItem('type');
+  const type = localStorage.getItem('type');
   const username = localStorage.getItem('username');
 
   const { cartCount, logout } = useContext(GeneralContext);
 
-  const [productSearch, setProductSearch] = useState('');
+  const [search, setSearch] = useState('');
 
-  const [noResult, setNoResult] = useState(false);
-  const [categories, setCategories] = useState([]);
+  async function handleSearch(e) {
 
-  // useEffect(()=>{
-  //   fetchData();
-  // }, [])
-
-  // const fetchData = async() =>{
-
-  //   await axios.get('http://localhost:6001/api/products/fetch-categories').then(
-  //     (response)=>{
-  //       setCategories(response.data);
-  //     }
-  //   )
-  // }
-
-  const handleSearch = () => {
-    if (categories.includes(productSearch)) {
-      navigate(`/category/${productSearch}`);
-    } else {
-      setNoResult(true);
-    }
   }
 
   return (
 
-    <>
-      {/* user navbar */}
-
-      {!usertype ?
-
-        <div className="navbar">
-          <h3 onClick={() => navigate('')}>ShopEZ</h3>
-          <div className="nav-content">
-            <div className="nav-search">
-              <input type="text" name="nav-search" id="nav-search" placeholder='Search Electronics, Fashion, mobiles, etc.,' onChange={(e) => setProductSearch(e.target.value)} />
-              <FcSearch className="nav-search-icon" onClick={handleSearch} />
-              {
-                noResult === true ?
-                  <div className='search-result-data'>no items found.... try searching for Electronics, mobiles, Groceries, etc., <ImCancelCircle className='search-result-data-close-btn' onClick={() => setNoResult(false)} /></div>
-                  :
-                  ""
-              }
-            </div>
-
-
-            <button className='btn' onClick={() => navigate('/auth')}>Login</button>
-
-          </div>
+    <Navbar expand="lg" className={'px-2' + (type === 'admin' ? ' bg-dark' : '')} >
+      <Container fluid>
+        <Navbar.Brand className='fw-bolder text-white' onClick={() => navigate('/')} style={{ cursor: 'pointer' }}> ShopEz-X</Navbar.Brand>
+        <div>
+          <Navbar.Toggle aria-controls='basic-navbar-nav' />
+          <Navbar.Collapse id='basic-navbar-nav'>
+            {type === 'admin' ?
+              null :
+              <Form className="d-flex">
+                <Form.Control
+                  type="search"
+                  placeholder="Search"
+                  className="mx-2"
+                  aria-label="Search"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                />
+                <Button variant="success" className='mx-2' onClick={handleSearch}>Search</Button>
+              </Form>
+            }
+            {type ?
+              (
+                type === 'user' ?
+                  <>
+                    <Button variant='outline-light' className='mx-2' onClick={() => navigate('/cart')}>Cart {cartCount > 0 ? <Badge>{cartCount}</Badge> : null}</Button>
+                    <Button variant='outline-light' className='mx-2' onClick={() => navigate('/profile')}>Profile</Button>
+                  </> :
+                  <Button variant='outline-light' className='mx-2' onClick={logout}>Logout</Button>
+              ) :
+              <Button variant='outline-light' className='mx-2' onClick={() => navigate('/auth')}>Login</Button>
+            }
+          </Navbar.Collapse>
         </div>
-
-        : <>
-
-          {usertype === 'user' ?
-
-            <div className="navbar">
-              <h3 onClick={() => navigate('')}>ShopEZ</h3>
-              <div className="nav-content">
-                <div className="nav-search">
-                  <input type="text" name="nav-search" id="nav-search" placeholder='Search Electronics, Fashion, mobiles, etc.,' onChange={(e) => setProductSearch(e.target.value)} />
-                  <FcSearch className="nav-search-icon" onClick={handleSearch} />
-                  {
-                    noResult === true ?
-                      <div className='search-result-data'>no items found.... try searching for Electronics, mobiles, Groceries, etc., <ImCancelCircle className='search-result-data-close-btn' onClick={() => setNoResult(false)} /></div>
-                      :
-                      ""
-                  }
-                </div>
-
-                <div className='nav-content-icons' >
-                  <div className="nav-profile" onClick={() => navigate('/profile')}>
-                    <BsPersonCircle className='navbar-icons' data-bs-toggle="tooltip" data-bs-placement="bottom" title="Profile" />
-                    <p>{username}</p>
-                  </div>
-                  <div className="nav-cart" onClick={() => navigate('/cart')}>
-                    <BsCart3 className='navbar-icons' data-bs-toggle="tooltip" data-bs-placement="bottom" title="Cart" />
-                    <div className="cart-count">{cartCount}</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            :
-
-            <div className="navbar-admin">
-              <h3 onClick={() => navigate('/admin')}>ShopEZ (admin)</h3>
-
-              <ul>
-                <li onClick={() => navigate('/admin')}>Home</li>
-                <li onClick={() => navigate('/all-users')}>Users</li>
-                <li onClick={() => navigate('/all-orders')}>Orders</li>
-                <li onClick={() => navigate('/all-products')}>Products</li>
-                <li onClick={() => navigate('/new-product')}>New Product</li>
-                <li onClick={logout}>Logout</li>
-              </ul>
-            </div>
-
-          }
-
-        </>
-
-
-      }
-
-    </>
+      </Container>
+    </Navbar>
   )
 }
 
-export default Navbar
+export default NavigationBar
