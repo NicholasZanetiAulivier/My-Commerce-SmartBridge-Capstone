@@ -2,13 +2,12 @@ const { ObjectId } = require('mongodb');
 const { Order, User, db } = require('../../../database');
 const productRespository = require('../product/repository');
 
-async function hello() {
-    // test.findOne({ ...}, { ...});
-    return { "message": "hellow" };
-}
-
 async function getOrderListByUid(id, offset, limit) {
     return await Order.find({ userId: new ObjectId(id) }, {}, { skip: offset, limit });
+}
+
+async function getAll(offset, limit) {
+    return await Order.find({}, {}, { skip: offset, limit });
 }
 
 async function transactionOrdering(user, name, email, mobile, address, postCode, paymentMethod,) {
@@ -52,11 +51,11 @@ async function getOrderById(id) {
 }
 
 module.exports = {
-    hello,
     getOrderListByUid,
     transactionOrdering,
     getOrderByUserIdAndId,
     updateStatus,
     getOrderById,
-    updateStatusByOrder
+    updateStatusByOrder,
+    getAll
 }

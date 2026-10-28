@@ -1,7 +1,6 @@
 const { errorResponder, errors } = require('../../../core/errors');
 const repository = require('./repository');
 const userRepository = require('../user/repository');
-const { ObjectId } = require('mongodb');
 
 async function hello() {
     const results = await repository.hello();
@@ -43,6 +42,42 @@ async function getHistory(id, offset, limit) {
                     deliveryDate: e.deliveryDate,
                     paymentMethod: e.paymentMethod,
                     status: e.orderStatus
+                }
+            )),
+        count: results.length
+    };
+}
+
+async function getAll(id, offset, limit) {
+    let results = await repository.getAll(offset, limit);
+    return {
+        data:
+            results.map((e) => (
+                {
+                    userId: e.userId,
+                    orderDetails: {
+                        id: e._id,
+                        name: e.name,
+                        email: e.email,
+                        mobile: e.mobile,
+                        address: e.address,
+                        postCode: e.postCode
+                    },
+                    products: e.products.map((p) => ({
+                        productId: p.productId,
+                        qty: p.qty,
+                        unitPrice: p.unitPrice,
+                        netPrice: p.netPrice,
+                        price: p.price,
+                        discount: p.discount
+                    })),
+                    totalPrice: e.products.reduce((p1, p2) => p1.price + p2.price, 0),
+                    discount: e.discount,
+                    orderDate: e.orderDate,
+                    deliveryDate: e.deliveryDate,
+                    paymentMethod: e.paymentMethod,
+                    status: e.orderStatus,
+
                 }
             )),
         count: results.length
@@ -119,5 +154,6 @@ module.exports = {
     getHistory,
     createOrder,
     cancel,
-    updateStatus
+    updateStatus,
+    getAll
 }
