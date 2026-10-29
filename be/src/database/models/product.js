@@ -8,12 +8,10 @@ module.exports = (db) =>
                 title: String,
                 description: String,
                 mainImg: String,
-                carousel: Array,
-                sizes: Array,
                 category: String,
-                gender: String,
                 price: Number,
                 discount: Number,
+                active: Boolean
             },
             {
                 collection: name,

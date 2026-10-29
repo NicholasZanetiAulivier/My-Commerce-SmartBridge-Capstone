@@ -14,6 +14,8 @@ const Admin = () => {
   useEffect(() => {
     if (localStorage.getItem('type') === 'admin') {
       navigate('/admin')
+    } else {
+      navigate('/');
     }
   }, [localStorage])
 

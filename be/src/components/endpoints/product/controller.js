@@ -2,6 +2,7 @@ const { errorResponder, errors, processJoiValidationError } = require('../../../
 const service = require('./service');
 const { checkInteger } = require('../../../utils/checks');
 const validate = require('../../middlewares/validator');
+const path = require('path');
 
 async function getProducts(req, res, next) {
     try {
@@ -34,11 +35,13 @@ async function createProduct(req, res, next) {
         if (req.user.type !== "admin") {
             throw errorResponder(errors.FORBIDDEN, "This can only be accessed by admins");
         }
+        if (!req.file)
+            throw errorResponder(errors.BAD_REQUEST, "You need to upload a PNG/JPEG file");
         const { error, value } = validate.product(req.body);
         processJoiValidationError(error);
-        const { title, description, mainImg, carousel, category, sizes, gender, price, discount } = value;
+        const { title, description, category, price, discount } = value;
 
-        const data = await service.createProduct(title, description, mainImg, carousel, category, sizes, gender, price, discount);
+        const data = await service.createProduct(title, description, req.file.path, category, price, discount);
         return res.status(201).json(data);
     } catch (e) {
         return next(e);
@@ -53,12 +56,27 @@ async function updateProduct(req, res, next) {
 
         const { error, value } = validate.productUpdate(req.body);
         processJoiValidationError(error);
-        const { title, description, mainImg, carousel, category, sizes, gender, price, discount } = value;
+        const { title, description, category, price, discount } = value;
+        console.log(req.file);
 
         const { id } = req.params;
 
-        const data = await service.updateProduct(id, { title, description, mainImg, carousel, category, sizes, gender, price, discount });
+        const data = await service.updateProduct(id, { title, description, mainImg: req.file ? req.file.path : undefined, category, price, discount });
 
+        return res.status(200).json(data);
+    } catch (e) {
+        return next(e);
+    }
+}
+
+async function deleteProduct(req, res, next) {
+    try {
+        if (req.user.type !== "admin") {
+            throw errorResponder(errors.FORBIDDEN, "This can only be accessed by admins");
+        }
+
+        const { id } = req.params;
+        const data = await service.deleteProduct(id);
         return res.status(200).json(data);
     } catch (e) {
         return next(e);
@@ -74,10 +92,23 @@ async function getCategories(req, res, next) {
     }
 }
 
+async function getProductImage(req, res, next) {
+    try {
+        const { id } = req.params;
+        const data = await service.getById(id);
+        const mainImgPath = path.join(__dirname, '..', '..', '..', '..', data.mainImg);
+        return res.status(200).sendFile(mainImgPath);
+    } catch (e) {
+        return next(e);
+    }
+}
+
 module.exports = {
     getProducts,
     getById,
     createProduct,
     updateProduct,
-    getCategories
+    getCategories,
+    deleteProduct,
+    getProductImage
 }

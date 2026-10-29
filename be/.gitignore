@@ -12,3 +12,4 @@ app.log
 *.pem
 *.pub
 views
+uploads

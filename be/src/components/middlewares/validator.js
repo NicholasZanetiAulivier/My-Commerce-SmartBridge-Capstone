@@ -54,11 +54,7 @@ const loginSchema = Joi.object({
 const productSchema = Joi.object({
     title: Joi.string().min(5).required(),
     description: Joi.string().default(""),
-    mainImg: Joi.string().default(""),
-    carousel: Joi.array().items(Joi.string()).default([]),
     category: Joi.string().required(),
-    sizes: Joi.array().items(Joi.string()),
-    gender: Joi.string().lowercase().valid('men', 'women', 'unisex'),
     price: Joi.number().min(0).required().default(0),
     discount: Joi.number()
 });
@@ -66,11 +62,7 @@ const productSchema = Joi.object({
 const productUpdateSchema = Joi.object({
     title: Joi.string().min(5),
     description: Joi.string(),
-    mainImg: Joi.string(),
-    carousel: Joi.array().items(Joi.string()),
     category: Joi.string(),
-    sizes: Joi.array().items(Joi.string()),
-    gender: Joi.string().lowercase().valid('man', 'woman', 'non-binary'),
     price: Joi.number().min(0),
     discount: Joi.number()
 });

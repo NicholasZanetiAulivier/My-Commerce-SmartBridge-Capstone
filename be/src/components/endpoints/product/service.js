@@ -25,11 +25,8 @@ async function getById(id) {
         return {
             title: result.title,
             description: result.description,
-            mainImg: result.description,
-            carousel: result.carousel,
-            sizes: result.sizes,
+            mainImg: result.mainImg,
             category: result.category,
-            gender: result.gender,
             price: result.price,
             discount: result.discount,
             id: result._id
@@ -39,8 +36,8 @@ async function getById(id) {
     }
 }
 
-async function createProduct(title, description, mainImg, carousel, category, sizes, gender, price, discount) {
-    const result = await repository.createProduct({ title, description, mainImg, carousel, category, sizes, gender, price, discount });
+async function createProduct(title, description, mainImg, category, price, discount) {
+    const result = await repository.createProduct({ title, description, mainImg, category, price, discount });
     if (!result)
         throw errorResponder(errors.DB, "Product was unable to be created");
 
@@ -51,15 +48,17 @@ async function createProduct(title, description, mainImg, carousel, category, si
     };
 }
 
-async function updateProduct(id, { title, description, mainImg, carousel, category, sizes, gender, price, discount }) {
+async function updateProduct(id, { title, description, mainImg, category, price, discount }) {
     let result;
+    console.log(title, description, mainImg, category, price, discount);
     try {
-        result = await repository.update(id, { title, description, mainImg, carousel, category, sizes, gender, price, discount });
+        result = await repository.update(id, { title, description, mainImg, category, price, discount });
     } catch (e) {
         console.log(e);
         throw errorResponder(errors.NOT_FOUND, "Product not found");
     }
 
+    console.log(result);
     if (result.modifiedCount != 1) {
         throw errorResponder(errors.DB, "Product not updated");
     }
@@ -79,10 +78,27 @@ async function getCategories() {
     };
 }
 
+async function deleteProduct(id) {
+    let result;
+    try {
+        result = await repository.setInactive(id);
+    } catch (e) {
+        console.log(e);
+        throw errorResponder(errors.NOT_FOUND, "Product not found");
+    }
+
+    if (result.modifiedCount != 1) {
+        throw errorResponder(errors.DB, "Product not updated");
+    }
+    return { id, deleted: true, message: "Product deleted" };
+
+}
+
 module.exports = {
     getProducts,
     getById,
     createProduct,
     updateProduct,
-    getCategories
+    getCategories,
+    deleteProduct
 }

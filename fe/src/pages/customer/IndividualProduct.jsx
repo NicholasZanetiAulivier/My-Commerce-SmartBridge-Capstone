@@ -87,22 +87,6 @@ const IndividualProduct = () => {
                     <h3 className='text-success'>Rp. {parseInt(price - (price * discount))}</h3>
 
                     <Form onSubmit={handleAddToCart}>
-                        {sizes[0] ?
-                            <Form.Group className="mb-3" controlId="formBasicType">
-                                <Form.Label>Preferred Size</Form.Label>
-                                <Form.Select onChange={(e) => setSize(e.target.value)} value={size ? size : null} className='w-25' required>
-                                    <option disabled>?</option>
-                                    {
-                                        sizes.map((s) => (
-                                            <option value={s} key={s}>
-                                                {s}
-                                            </option>)
-                                        )
-                                    }
-                                </Form.Select>
-                            </Form.Group>
-                            : null
-                        }
                         <Form.Group>
                             <Form.Label>Amount</Form.Label>
                             <Form.Control type='number' min={1} className='w-25' value={qty} onChange={(e) => setQty(e.target.value)} required />

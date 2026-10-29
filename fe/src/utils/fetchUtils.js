@@ -2,8 +2,8 @@ import ENV from '../config/env';
 
 export async function fetchApi(route, method = 'GET', body = undefined, headers = undefined) {
     const url = ENV.BASE_BE_URL + route;
-    const config = { method, body: body ? JSON.stringify(body) : undefined };
-    if (body) {
+    const config = { method, body: body ? (body instanceof FormData ? body : JSON.stringify(body)) : undefined };
+    if (body && !(body instanceof FormData)) {
         if (!headers)
             headers = new Headers();
         headers.set('Content-Type', 'application/json');
@@ -42,6 +42,10 @@ export async function fetchApi(route, method = 'GET', body = undefined, headers 
         if (res.ok) return res;
         else throw new Error(url + ":", "Failed");
     }).catch(e => { throw e });
+}
+
+export function imgString(id) {
+    return ENV.BASE_BE_URL + "/product/" + id + '/image';
 }
 
 export function createTokenHeader() {

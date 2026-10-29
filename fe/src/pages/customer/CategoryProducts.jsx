@@ -6,16 +6,16 @@ import { useParams } from 'react-router-dom'
 
 const CategoryProducts = () => {
 
-  const {category} = useParams();
+  const { category } = useParams();
 
   return (
     <div className="categoryProducts-page">
 
-    <h2>{category}</h2>
+      <h2 className='mx-auto d-block text-center fw-bold'>{category}</h2>
 
-    <Products category={category} />
+      <Products category={category} />
 
-    <Footer />
+      <Footer />
     </div>
   )
 }

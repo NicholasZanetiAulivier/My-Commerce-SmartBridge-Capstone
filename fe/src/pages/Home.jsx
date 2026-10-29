@@ -4,7 +4,7 @@ import Products from '../components/Products'
 import Footer from '../components/Footer'
 import { useNavigate } from 'react-router-dom'
 import { fetchApi } from '../utils/fetchUtils'
-import { Card, CardImg, Container } from 'react-bootstrap'
+import { Button, Card, CardImg, Container } from 'react-bootstrap'
 import { BsLine } from 'react-icons/bs'
 import ENV from '../config/env'
 
@@ -16,6 +16,7 @@ const Home = () => {
 
   useEffect(() => {
     if (localStorage.getItem('type') === 'admin') navigate('/admin');
+    else navigate('/');
     fetchCategories();
   }, [])
 
@@ -31,20 +32,19 @@ const Home = () => {
 
   return (
     <Container fluid style={{ 'paddingTop': '10vh', paddingRight: 0, paddingLeft: 0 }}>
+      <h2 className='mx-auto d-block text-center fw-bold'>Categories</h2>
       <Container fluid className='d-flex justify-content-center'>
 
         {
           categories ?
             categories.map((c) => (
-              <Card onClick={() => navigate('/category/' + c)} className='col-1' key={c}>
-                <CardImg src={ENV.PLACEHOLD_IMG} />
-                <div className='h5 align-self-center'>{c}</div>
-              </Card>
+              <Button onClick={() => navigate('/category/' + c)} className='fw-bold m-1' key={c}>{c}</Button>
             ))
             : null
         }
       </Container>
       <hr className="hr px-5 mx-5" />
+      <h2 className='mx-auto d-block text-center fw-bold'>All Products</h2>
       <Container fluid>
         <Products category={categories} />
       </Container>
