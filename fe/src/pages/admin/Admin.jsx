@@ -38,7 +38,7 @@ const Admin = () => {
       }).catch(e => { throw e });
       setProductCount(body.count);
 
-      body = await fetchApi('/order', 'GET', null, createTokenHeader()).then(res => {
+      body = await fetchApi('/order/all', 'GET', null, createTokenHeader()).then(res => {
         if (res.ok) return res.json();
         else throw new Error();
       }).catch(e => { throw e });

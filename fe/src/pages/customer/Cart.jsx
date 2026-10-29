@@ -1,35 +1,44 @@
 import React, { useEffect, useState, useContext } from 'react';
 import '../../styles/Cart.css';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { GeneralContext } from '../../context/GeneralContext';
-import { createTokenHeader, fetchApi } from '../../utils/fetchUtils';
-import { Button, Container, Image } from 'react-bootstrap';
+import { createTokenHeader, fetchApi, imgString } from '../../utils/fetchUtils';
+import { Button, Container, Form, Image } from 'react-bootstrap';
 import ENV from '../../config/env';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
+import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
 
 const Cart = () => {
-  const { cartCount, setCartCount } = useContext(GeneralContext);
+
+  const navigate = useNavigate();
+  const { email } = useContext(GeneralContext);
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const [totalPrice, setTotalPrice] = useState(0);
   const [totalDiscount, setTotalDiscount] = useState(0);
-  const [deliveryCharges, setDeliveryCharges] = useState(0);
+  const { fetchCartCount } = useContext(GeneralContext);
+
 
   // Checkout form states
   const [name, setName] = useState('');
   const [mobile, setMobile] = useState('');
-  const [email, setEmail] = useState('');
+  const [currentEmail, setEmail] = useState(email);
   const [address, setAddress] = useState('');
-  const [pincode, setPincode] = useState('');
-  const [paymentMethod, setPaymentMethod] = useState('');
+  const [postCode, setPostCode] = useState('');
+  const [paymentMethod, setPaymentMethod] = useState('card');
 
-  const navigate = useNavigate();
 
   useEffect(() => {
+    if (localStorage.getItem("type") !== 'user' || localStorage.getItem("token") == null) {
+      navigate('/');
+    }
     fetchCart();
   }, []);
+
+  useEffect(() => {
+    fetchCartCount();
+  }, [cartItems])
 
 
   async function fetchCart() {
@@ -43,10 +52,10 @@ const Cart = () => {
       for (const item of results.cart) {
         const data = await fetchApi('/product/' + item.productId).then(res => res.json());
         data['qty'] = item.qty;
-        cartContents.push(data);
+        if (data.active)
+          cartContents.push(data);
       }
       setCartItems(cartContents);
-      setCartCount(results.count);
       setLoading(false);
 
     } catch (e) {
@@ -54,21 +63,48 @@ const Cart = () => {
     }
   }
 
+  async function updateAmount(id, count) {
+    if (count === 0) {
+      await fetchApi('/cart/' + id, 'DELETE', null, createTokenHeader());
+    } else {
+      await fetchApi('/cart/set-quantity/' + id, 'PUT', { qty: count }, createTokenHeader());
+    }
+    fetchCart();
+  }
+
   const calculateTotalPrice = () => {
     const total = cartItems.reduce((sum, item) => sum + (item.price * item.qty), 0);
     const discount = cartItems.reduce((sum, item) => sum + ((item.price * item.discount)) * item.qty, 0);
     setTotalPrice(total);
     setTotalDiscount(Math.floor(discount));
-    setDeliveryCharges(total > 1000 || cartItems.length === 0 ? 0 : 50);
   };
+
+  async function handleCreateOrder(e) {
+    e.preventDefault();
+
+    const body = {
+      name,
+      mobile,
+      email: currentEmail,
+      address,
+      postCode,
+      paymentMethod,
+    };
+
+    await fetchApi('/order', 'POST', body, createTokenHeader()).then(async res => {
+      if (res.ok) {
+        fetchCartCount();
+        navigate('/');
+      } else {
+        console.log(await res.json());
+        navigate('/');
+      }
+    });
+  }
 
   useEffect(() => {
     calculateTotalPrice();
   }, [cartItems]);
-
-
-
-  const userId = localStorage.getItem('userId');
 
   if (loading) return <p style={{ textAlign: 'center', marginTop: '20vh' }}>Loading cart...</p>;
 
@@ -79,21 +115,65 @@ const Cart = () => {
           Items in cart
         </div>
         {
-          cartItems.map((i) => {
-            return (
-              <Container className='d-flex' key={i.productId}>
-                <Image src={i.mainImg ? i.mainImg : ENV.PLACEHOLD_IMG} style={{ height: '20vh' }} />
-                <Container fluid>
-                  <h2 className='fw-bold'>{i.title}</h2>
-                  <h4 className='text-muted'>{i.description}</h4>
-                  <h4 className='fw-bold'>Quantity: {i.qty}<Button variant='outline-info' className='border-0 rounded-5'><AddCircleIcon /></Button></h4>
+          cartItems && cartItems.length >= 0 ?
+            cartItems.map((i) => {
+              return (
+                <Container className='d-flex' key={i.id}>
+                  <Image className='object-fit-cover' src={i.mainImg ? imgString(i.id) : ENV.PLACEHOLD_IMG} style={{ height: '20vh', maxWidth: "20%" }} />
+                  <Container fluid>
+                    <h2 className='fw-bold'>{i.title}</h2>
+                    <h4 className='text-muted'>{i.description}</h4>
+                    <h4 className='fw-bold'>Quantity: {i.qty}
+                      <Button onClick={() => { updateAmount(i.id, Math.max(i.qty + 1, 0)) }} variant='outline-info' className='border-0 rounded-5'><AddCircleIcon /></Button>
+                      <Button onClick={() => { updateAmount(i.id, Math.max(i.qty - 1, 0)) }} variant='outline-danger' className='border-0 rounded-5'><RemoveCircleIcon /></Button>
+                    </h4>
+                    <h4>Price: <span className='text-success'>Rp. {i.price}</span> {i.discount > 0 ? <span className='text-danger'>-{i.discount * 100}%</span> : null}</h4>
+                  </Container>
                 </Container>
-              </Container>
-            )
-          })
+              )
+            }) :
+            <p className='text-muted'>Empty</p>
         }
       </div>
-      <div className='col-2'></div>
+      <div className='col-2 py-3'>
+        <h2 className="fw-bold">Order Now</h2>
+        <p>Price: <span className='text-success'>Rp.{totalPrice - totalDiscount} ({totalPrice} - {totalDiscount})</span></p>
+        <Container>
+          <Form onSubmit={handleCreateOrder}>
+            <Form.Group className="mb-3">
+              <Form.Label>Name</Form.Label>
+              <Form.Control type="text" placeholder="Enter Name" onChange={(e) => setName(e.target.value)} value={name} required />
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Email</Form.Label>
+              <Form.Control type="email" placeholder="Enter Email" onChange={(e) => setEmail(e.target.value)} value={email} required />
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Phone Number</Form.Label>
+              <Form.Control type="text" placeholder="Enter Phone Number" onChange={(e) => setMobile(e.target.value)} value={mobile} required />
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Address</Form.Label>
+              <Form.Control type="text" placeholder="Enter Address" onChange={(e) => setAddress(e.target.value)} value={address} required />
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>PostCode</Form.Label>
+              <Form.Control type="text" placeholder="Enter Post Code" onChange={(e) => setPostCode(e.target.value)} value={postCode} required />
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="formBasicType">
+              <Form.Label>Payment Method</Form.Label>
+              <Form.Select onChange={(e) => setPaymentMethod(e.target.value)} value={paymentMethod} required>
+                <option disabled>Select Type</option>
+                <option value="card">Card</option>
+                <option value="credit">Credit</option>
+              </Form.Select>
+            </Form.Group>
+            <Button variant="primary" type="submit">
+              Order
+            </Button>
+          </Form >
+        </Container>
+      </div>
     </Container>
   );
 };

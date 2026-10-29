@@ -4,9 +4,7 @@ import Products from '../components/Products'
 import Footer from '../components/Footer'
 import { useNavigate } from 'react-router-dom'
 import { fetchApi } from '../utils/fetchUtils'
-import { Button, Card, CardImg, Container } from 'react-bootstrap'
-import { BsLine } from 'react-icons/bs'
-import ENV from '../config/env'
+import { Button, Container } from 'react-bootstrap'
 
 const Home = () => {
 

@@ -24,7 +24,7 @@ const Register = ({ setIsLogin }) => {
         </Form.Group>
         <Form.Group className="mb-3" controlId="formBasicPassword">
           <Form.Label>Password</Form.Label>
-          <Form.Control type="password" placeholder="Password" onChange={(e) => setPassword(e)} value={password} required />
+          <Form.Control type="password" placeholder="Password" onChange={(e) => setPassword(e.target.value)} value={password} minLength={12} required />
         </Form.Group>
         <Form.Group className="mb-3" controlId="formBasicType">
           <Form.Label>User type</Form.Label>

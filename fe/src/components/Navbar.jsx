@@ -24,7 +24,7 @@ const NavigationBar = () => {
 
     <Navbar expand="lg" className={'px-2' + (type === 'admin' ? ' bg-dark' : '')} >
       <Container fluid>
-        <Navbar.Brand className='fw-bolder text-white' onClick={() => navigate('/')} style={{ cursor: 'pointer' }}> ShopEz-X {username ? ": " + username : null}</Navbar.Brand>
+        <Navbar.Brand className='fw-bolder text-white' onClick={() => navigate('/')} style={{ cursor: 'pointer' }}> ShopSimple {username ? ": " + username : null}</Navbar.Brand>
         <div>
           <Navbar.Toggle aria-controls='basic-navbar-nav' />
           <Navbar.Collapse id='basic-navbar-nav'>

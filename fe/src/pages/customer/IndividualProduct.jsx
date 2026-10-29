@@ -3,7 +3,7 @@ import '../../styles/IndividualProduct.css'
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import { GeneralContext } from '../../context/GeneralContext';
-import { createTokenHeader, fetchApi } from '../../utils/fetchUtils';
+import { createTokenHeader, fetchApi, imgString } from '../../utils/fetchUtils';
 import { Button, Container, Form, Image, Modal } from 'react-bootstrap';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ENV from '../../config/env';
@@ -13,18 +13,15 @@ const IndividualProduct = () => {
     const { id } = useParams();
     const navigate = useNavigate();
 
-    const { password, fetchCartCount } = useContext(GeneralContext);
+    const { fetchCartCount } = useContext(GeneralContext);
 
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
     const [mainImg, setMainImg] = useState('');
-    const [sizes, setSizes] = useState([]);
     const [price, setPrice] = useState(0);
     const [discount, setDiscount] = useState(0);
 
     const [qty, setQty] = useState(1);
-
-    const [size, setSize] = useState('');
 
     const [success, setSuccess] = useState(true);
     const [modalShow, setModalShow] = useState(false);
@@ -42,7 +39,6 @@ const IndividualProduct = () => {
         setName(result.title);
         setDescription(result.description);
         setMainImg(result.mainImg);
-        setSizes(result.sizes);
         setPrice(result.price);
         setDiscount(result.discount);
     }
@@ -74,12 +70,12 @@ const IndividualProduct = () => {
     }
 
     return (
-        <Container fluid className="px-5 pt-5 d-flex flex-column justify-content-center ">
+        <Container className="px-5 pt-5 d-flex flex-column justify-content-center ">
             <Button onClick={() => navigate(-1)} style={{ width: 'fit-content' }}>
                 <ArrowBackIcon /> Back
             </Button>
             <div className='d-flex gap-4 justify-content-center pt-3'>
-                <Image src={mainImg ? mainImg : ENV.PLACEHOLD_IMG} style={{ minWidth: '40%' }} />
+                <Image src={mainImg ? imgString(id) : ENV.PLACEHOLD_IMG} style={{ width: '100%' }} />
                 <div className='vr' />
                 <Container fluid style={{ minWidth: '40%' }}>
                     <h1 className='fw-bold'>{name}</h1>

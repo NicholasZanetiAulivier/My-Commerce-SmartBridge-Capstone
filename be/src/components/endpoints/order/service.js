@@ -33,11 +33,8 @@ async function getHistory(id, offset, limit) {
                         qty: p.qty,
                         unitPrice: p.unitPrice,
                         netPrice: p.netPrice,
-                        price: p.price,
                         discount: p.discount
                     })),
-                    totalPrice: e.products.reduce((p1, p2) => p1.price + p2.price, 0),
-                    discount: e.discount,
                     orderDate: e.orderDate,
                     deliveryDate: e.deliveryDate,
                     paymentMethod: e.paymentMethod,
@@ -48,7 +45,7 @@ async function getHistory(id, offset, limit) {
     };
 }
 
-async function getAll(id, offset, limit) {
+async function getAll(offset, limit) {
     let results = await repository.getAll(offset, limit);
     return {
         data:
@@ -107,7 +104,7 @@ async function createOrder(id, name, email, mobile, address, postCode, paymentMe
 async function cancel(status, orderId, userId) {
     let order;
     try {
-        order = await repository.getOrderByUserIdAndId(userId, order);
+        order = await repository.getOrderByUserIdAndId(userId, orderId);
         if (!order)
             throw new Error();
     } catch (e) {
@@ -116,6 +113,28 @@ async function cancel(status, orderId, userId) {
 
     if (['in delivery', 'delivered', 'completed', 'cancelled'].includes(order.status)) {
         throw errorResponder(errors.DB, "Status can't be cancelled");
+    }
+
+    const result = await repository.updateStatus(orderId, userId, status);
+    if (result.modifiedCount < 1) {
+        throw errorResponder(errors.DB, "Unable to update status");
+    }
+
+    return { message: "Successfully cancelled order status" };
+
+}
+async function completed(status, orderId, userId) {
+    let order;
+    try {
+        order = await repository.getOrderByUserIdAndId(userId, orderId);
+        if (!order)
+            throw new Error();
+    } catch (e) {
+        throw errorResponder(errors.NOT_FOUND, "Order not found");
+    }
+
+    if (['pending'].includes(order.status)) {
+        throw errorResponder(errors.DB, "Status can't be completed");
     }
 
     const result = await repository.updateStatus(orderId, userId, status);
@@ -155,5 +174,6 @@ module.exports = {
     createOrder,
     cancel,
     updateStatus,
-    getAll
+    getAll,
+    completed
 }

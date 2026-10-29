@@ -2,58 +2,65 @@ import React, { useContext, useEffect, useState } from 'react'
 import '../../styles/Profile.css'
 import { GeneralContext } from '../../context/GeneralContext'
 import axios from 'axios';
+import { createTokenHeader, fetchApi } from '../../utils/fetchUtils';
+import { Button, Card, Container, Modal } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
 
 const Profile = () => {
 
+  const navigate = useNavigate();
   const { logout } = useContext(GeneralContext);
 
-  const userId = localStorage.getItem('userId');
   const username = localStorage.getItem('username');
   const email = localStorage.getItem('email');
 
   const [orders, setOrders] = useState([]);
-
+  const [currentOrder, setCurrentOrder] = useState();
+  const [show, setShow] = useState(false);
 
   useEffect(() => {
-    // fetchOrders();
+    fetchOrders();
   }, [])
+  async function fetchOrders() {
+    const body = await fetchApi("/order", 'GET', null, createTokenHeader()).then(res => {
+      if (res.ok) {
+        return res.json();
+      } else {
+        console.log(res.text);
+        navigate('/');
+      }
+    }).catch(e => navigate('/'));
+    console.log(body);
+    setOrders(body.data);
+  }
 
-  // const fetchOrders = async () =>{
-  //   await axios.get(`http://localhost:6001/api/orders/fetch-orders`).then(
-  //     (response)=>{
-  //       setOrders(response.data.reverse());
-  //     }
-  //   )
-  // }
+  function showModal(order) {
+    setCurrentOrder(order);
+    setShow(true);
+  }
 
+  function handleClose() {
+    setShow(false);
+    setCurrentOrder(null);
+  }
+  async function handleCancel() {
+    await fetchApi("/order/cancel/" + currentOrder.orderDetails.id, 'PATCH', null, createTokenHeader()).then(res => {
+      if (res.ok)
+        navigate(0);
+      else console.log(res.text);
+    }).catch(e => navigate('/'));
+    setShow(false);
+  }
 
-  // const cancelOrder = async (orderId) => {
-  //   if (!orderId) {
-  //     alert("Order ID is required");
-  //     return;
-  //   }
+  async function handleCompleted() {
+    await fetchApi("/order/completed/" + currentOrder.orderDetails.id, 'PATCH', null, createTokenHeader()).then(res => {
+      if (res.ok)
+        navigate(0);
+      else console.log(res.text);
+    }).catch(e => navigate('/'));
+    setShow(false);
 
-  //   try {
-  //     const { data } = await axios.put(
-  //       "http://localhost:6001/api/orders/cancel-order",
-  //       { orderId } // sending orderId in request body
-  //     );
-
-  //     console.log("Order cancelled:", data);
-  //     alert("Order cancelled successfully!");
-
-  //     // Update local state to remove cancelled order
-  //     setOrders((prevOrders) =>
-  //       prevOrders.map((order) =>
-  //         order._id === orderId ? { ...order, orderStatus: "Cancelled" } : order
-  //       )
-  //     );
-
-  //   } catch (error) {
-  //     console.error("Cancel order frontend error:", error);
-  //     alert(error.response?.data?.message || "Error cancelling order");
-  //   }
-  // };
+  }
   return (
     <div className="profilePage">
 
@@ -75,45 +82,74 @@ const Profile = () => {
 
       </div>
 
-      <div className="profileOrders-container">
-        <h3>Orders</h3>
-        <div className="profileOrders">
+      <Container>
+        <table className='table table-striped align-content-center'>
+          <thead>
+            <tr>
+              <th>Order date</th>
+              <th>Total Price</th>
+              <th>Status</th>
+              <th>Payment Method</th>
+              <th>Details</th>
+            </tr>
+          </thead>
+          <tbody>
+            {
+              orders.map(o => (
+                <tr>
+                  <th>{o.orderDate}</th>
+                  <th>Rp. {o.products.reduce((a, b) => a + b.netPrice * (1 - b.discount), 0)}</th>
+                  <th>{o.status}</th>
+                  <th>{o.paymentMethod}</th>
+                  <th><Button onClick={() => showModal(o)}>Details</Button></th>
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+      </Container>
 
-          {orders.map((order) => {
-            return (
-              <div className="profileOrder" key={order._id}>
-                <img src={order.mainImg} alt="" />
-                <div className="profileOrder-data">
-                  <h4>{order.title}</h4>
-                  <p>{order.description}</p>
+      <Modal show={show} onHide={handleClose} animation={false}>
+        {
+          currentOrder ? <>
+            <Modal.Body>
+              {currentOrder.products.map((p) => {
+                return (
                   <div>
-                    <span><p><b>Size: </b> {order.size}</p></span>
-                    <span><p><b>Quantity: </b> {order.quantity}</p></span>
-                    <span><p><b>Price: </b> &#8377; {parseInt(order.price - (order.price * order.discount) / 100) * order.quantity}</p></span>
-                    <span><p><b>Payment method: </b> {order.paymentMethod}</p></span>
+                    <h4>{p.productId}</h4>
+                    <h5 className="text-muted">{p.qty} X Rp. {p.unitPrice}</h5>
+                    {p.discount > 0 ? <h5 className="text-muted">-{p.discount * 100}%</h5> : null}
+                    <h5 className="text-muted">Rp. {p.netPrice}</h5>
                   </div>
-                  <div>
-                    <span><p><b>Address: </b> {order.address}</p></span>
-                    <span><p><b>Pincode: </b> {order.pincode}</p></span>
-                    <span><p><b>Ordered on: </b> {order.orderDate.slice(0, 10)}</p></span>
-                  </div>
-                  <div>
-                    <span><p><b>Order status: </b> {order.orderStatus}</p></span>
-                  </div>
-                  {order.orderStatus === 'order placed' || order.orderStatus === 'In-transit' ?
-
-                    <button className='btn btn-danger' onClick={() => { }}>Cancel</button>
-                    :
-                    ""}
-                </div>
-              </div>
-            )
-          })}
-
-
-        </div>
-      </div>
-
+                )
+              })}
+              <h6>Name: {currentOrder.orderDetails.name}</h6>
+              <h6>Email: {currentOrder.orderDetails.email}</h6>
+              <h6>Phone Number: {currentOrder.orderDetails.mobile}</h6>
+              <h6>Address: {currentOrder.orderDetails.address}</h6>
+              <h6>Post Code: {currentOrder.orderDetails.postCode}</h6>
+            </Modal.Body>
+            <Modal.Footer>
+              <Button variant="secondary" onClick={handleClose}>
+                Close
+              </Button>
+              {
+                currentOrder.status === 'pending' ?
+                  <Button variant="danger" onClick={handleCancel}>
+                    Cancel
+                  </Button> : (
+                    currentOrder.status !== 'completed' || currentOrder.status !== 'canceled' ?
+                      <Button variant="success" onClick={handleCompleted}>
+                        Completed
+                      </Button> :
+                      null
+                  )
+              }
+            </Modal.Footer>
+          </> :
+            null
+        }
+      </Modal>
     </div>
   )
 }

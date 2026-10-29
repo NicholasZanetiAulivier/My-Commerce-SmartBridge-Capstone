@@ -29,6 +29,7 @@ async function getById(id) {
             category: result.category,
             price: result.price,
             discount: result.discount,
+            active: result.active,
             id: result._id
         };
     } catch (_e) {

@@ -2,7 +2,6 @@ const service = require('./service');
 const { checkInteger } = require('../../../utils/checks');
 const validate = require('../../middlewares/validator');
 const { processJoiValidationError, errorResponder, errors } = require('../../../core/errors');
-const { getAll } = require('./repository');
 
 async function getHistory(req, res, next) {
     try {
@@ -14,6 +13,7 @@ async function getHistory(req, res, next) {
         const { id } = req.user;
 
         const results = await service.getHistory(id, offset, limit);
+        console.log(results);
         return res.status(200).json(results);
     } catch (e) {
         return next(e);
@@ -53,7 +53,7 @@ async function createOrder(req, res, next) {
 
 async function cancel(req, res, next) {
     try {
-        const status = 'cancel';
+        const status = 'canceled';
 
         const { id } = req.params;
         const { id: uid, type } = req.user;
@@ -85,13 +85,13 @@ async function updateStatus(req, res, next) {
 
 async function completed(req, res, next) {
     try {
-        const status = 'cancel';
+        const status = 'completed';
 
         const { id } = req.params;
         const { id: uid, type } = req.user;
         if (type !== 'user') throw errorResponder(errors.FORBIDDEN, "Only users can access this function");
 
-        const results = await service.cancel(status, id, uid);
+        const results = await service.completed(status, id, uid);
         return res.status(200).json(results);
     } catch (e) {
         return next(e);

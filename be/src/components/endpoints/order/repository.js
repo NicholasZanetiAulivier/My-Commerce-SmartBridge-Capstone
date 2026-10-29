@@ -38,7 +38,7 @@ async function getOrderByUserIdAndId(uid, oid) {
     return await Order.findOne({ userId: new ObjectId(uid), _id: new ObjectId(oid) });
 }
 
-async function updateStatus(status, uid, oid) {
+async function updateStatus(oid, uid, status) {
     return await Order.updateOne({ userId: new ObjectId(uid), _id: new ObjectId(oid) }, { orderStatus: status });
 }
 

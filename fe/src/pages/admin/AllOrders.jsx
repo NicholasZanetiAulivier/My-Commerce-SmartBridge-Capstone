@@ -1,125 +1,134 @@
 import React, { useEffect, useState } from 'react'
 import '../../styles/AllOrders.css'
-import axios from 'axios';
+import { Button, Container, Modal } from 'react-bootstrap';
+import { createTokenHeader, fetchApi } from '../../utils/fetchUtils';
+import { useNavigate } from 'react-router-dom';
+import WestIcon from '@mui/icons-material/West';
 
 const AllOrders = () => {
 
+  const navigate = useNavigate();
+
 
   const [orders, setOrders] = useState([]);
+  const [currentOrder, setCurrentOrder] = useState();
+  const [show, setShow] = useState(false);
 
-  const [updateStatus, setUpdateStatus] = useState('');
+  useEffect(() => {
+    fetchOrders();
+  }, [])
+  async function fetchOrders() {
+    const body = await fetchApi("/order/all", 'GET', null, createTokenHeader()).then(res => {
+      if (res.ok) {
+        return res.json();
+      } else {
+        console.log(res.text);
+        navigate('/');
+      }
+    }).catch(e => navigate('/'));
+    setOrders(body.data);
+  }
 
+  function showModal(order) {
+    setCurrentOrder(order);
+    setShow(true);
+  }
 
-  // useEffect(() => {
-  //   fetchOrders();
-  // }, [])
+  function handleClose() {
+    setShow(false);
+    setCurrentOrder(null);
+  }
+  async function handleInDelivery() {
+    await fetchApi("/order/status/" + currentOrder.orderDetails.id, 'PATCH', { status: 'in delivery' }, createTokenHeader()).then(res => {
+      if (res.ok)
+        navigate(0);
+      else console.log(res.text);
+    }).catch(e => navigate('/'));
+    setShow(false);
+  }
 
-  // const fetchOrders = async () =>{
-  //   await axios.get(`http://localhost:6001/api/orders/fetch-orders`).then(
-  //     (response)=>{
-  //       setOrders(response.data.reverse());
-  //     }
-  //   )
-  // }
-
-
-  // const cancelOrder = async (orderId) => {
-  //   try {
-  //     const { data } = await axios.put('http://localhost:6001/api/orders/cancel-order', { orderId });
-  //     alert(data.message || "Order cancelled!!");
-  //     fetchOrders();
-  //   } catch (err) {
-  //     console.error(err);
-  //     alert(err.response?.data?.message || "Order cancellation failed!!");
-  //   }
-  // };
-
-
-  // const updateOrderStatus = async (id) => {
-  //   await axios.put('http://localhost:6001/api/orders/update-order-status', { id, updateStatus }).then(
-  //     (response) => {
-  //       alert("Order status updated!!");
-  //       setUpdateStatus('');
-  //       fetchOrders();
-  //     }
-  //   ).catch((err) => {
-  //     alert("Order update failed!!");
-  //   })
-  // }
+  async function handleDelivered() {
+    await fetchApi("/order/status/" + currentOrder.orderDetails.id, 'PATCH', { status: 'delivered' }, createTokenHeader()).then(res => {
+      if (res.ok)
+        navigate(0);
+      else console.log(res.text);
+    }).catch(e => navigate('/'));
+    setShow(false);
+  }
 
   return (
-    <div className="all-orders-page">
-      <h3>Orders</h3>
+    <Container className='py-4'>
+      <span><Button onClick={() => navigate(-1)}><WestIcon /></Button> All Orders</span>
+      <Container>
+        <table className='table table-striped align-content-center'>
+          <thead>
+            <tr>
+              <th>User ID</th>
+              <th>Order date</th>
+              <th>Total Price</th>
+              <th>Status</th>
+              <th>Payment Method</th>
+              <th>Details</th>
+            </tr>
+          </thead>
+          <tbody>
+            {
+              orders.map(o => (
+                <tr>
+                  <th>{o.userId}</th>
+                  <th>{o.orderDate}</th>
+                  <th>Rp. {o.products.reduce((a, b) => a + b.netPrice * (1 - b.discount), 0)}</th>
+                  <th>{o.status}</th>
+                  <th>{o.paymentMethod}</th>
+                  <th><Button onClick={() => showModal(o)}>Details</Button></th>
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+      </Container>
 
-      <div className="all-orders">
-
-        {orders.map((order) => {
-          return (
-            <div className="all-orders-order">
-              <img src={order.mainImg} alt="" />
-              <div className="all-orders-order-data">
-
-                <h4>{order.title}</h4>
-                <p>{order.description}</p>
-                <div>
-                  <span><p><b>Size: </b> {order.size}</p></span>
-                  <span><p><b>Quantity: </b> {order.quantity}</p></span>
-                  <span><p><b>Price: </b> &#8377; {parseInt(order.price - (order.price * order.discount) / 100) * order.quantity}</p></span>
-                  <span><p><b>Payment method: </b> {order.paymentMethod}</p></span>
-                </div>
-                <div>
-                  <span><p><b>UserId: </b> {order.userId}</p></span>
-                  <span><p><b>Name: </b> {order.name}</p></span>
-                  <span><p><b>Email: </b> {order.email}</p></span>
-                  <span><p><b>Mobile: </b> {order.mobile}</p></span>
-                </div>
-                <div>
-                  <span><h5><b>Ordered on: </b> {order.orderDate.slice(0, 10)}</h5></span>
-                  <span><h5><b>Address: </b> {order.address}</h5></span>
-                  <span><h5><b>Pincode: </b> {order.pincode}</h5></span>
-                </div>
-                <div>
-                  <span><h5><b>Order status: </b> {order.orderStatus}</h5></span>
-                  {order.orderStatus === 'delivered' || order.orderStatus === 'cancelled' ?
-                    ""
-                    :
-                    <span>
-                      <div >
-                        <select class="form-select form-select-sm" id='flotingSelect-allOrders' defaultValue="" onChange={(e) => setUpdateStatus(e.target.value)}>
-                          <option value="" disabled>Update order status</option>
-                          <option value="Order placed">Order Placed</option>
-                          <option value="In-transit">In-transit</option>
-                          <option value="delivered">Delivered</option>
-                        </select>
-                      </div>
-                      <button className='btn btn-primary' onClick={() => { }}>Update</button>
-                    </span>
-                  }
-
-
-
-                  {order.orderStatus === 'order placed' || order.orderStatus === 'In-transit' ?
-
-                    <button className='btn btn-danger' onClick={() => { }}>Cancel</button>
-                    :
-                    ""}
-                </div>
-              </div>
-            </div>
-          )
-        })}
-
-
-
-
-
-
-
-
-      </div>
-
-    </div>
+      <Modal show={show} onHide={handleClose} animation={false}>
+        {
+          currentOrder ? <>
+            <Modal.Body>
+              {currentOrder.products.map((p) => {
+                return (
+                  <div>
+                    <h4>{p.productId}</h4>
+                    <h5 className="text-muted">{p.qty} X Rp. {p.unitPrice}</h5>
+                    {p.discount > 0 ? <h5 className="text-muted">-{p.discount * 100}%</h5> : null}
+                    <h5 className="text-muted">Rp. {p.netPrice}</h5>
+                  </div>
+                )
+              })}
+              <h6>Name: {currentOrder.orderDetails.name}</h6>
+              <h6>Email: {currentOrder.orderDetails.email}</h6>
+              <h6>Phone Number: {currentOrder.orderDetails.mobile}</h6>
+              <h6>Address: {currentOrder.orderDetails.address}</h6>
+              <h6>Post Code: {currentOrder.orderDetails.postCode}</h6>
+            </Modal.Body>
+            <Modal.Footer>
+              <Button variant="secondary" onClick={handleClose}>
+                Close
+              </Button>
+              {
+                currentOrder.status === 'pending' ?
+                  <Button variant="warning" onClick={handleInDelivery}>
+                    In Delivery
+                  </Button> : (
+                    currentOrder.status === 'in delivery' ?
+                      <Button variant="warning" onClick={handleDelivered}>
+                        Delivered
+                      </Button> : null
+                  )
+              }
+            </Modal.Footer>
+          </> :
+            null
+        }
+      </Modal>
+    </Container>
   )
 }
-
-export default AllOrders
+export default AllOrders;
