@@ -90,18 +90,7 @@ const GeneralContextProvider = ({ children }) => {
         if (res.ok) return res.json();
         else throw new Error();
       });
-
-      localStorage.setItem('userId', body.id);
-      localStorage.setItem('type', body.type);
-      localStorage.setItem('username', body.username);
-      localStorage.setItem('email', body.email);
-
-      if (body.type === 'user') {
-        navigate('/');
-      } else if (body.type === 'admin') {
-        navigate('/admin');
-      }
-      localStorage.setItem('logout', false);
+      localStorage.setItem('logout', true);
     } catch (err) {
       alert("Registration failed!!");
       console.error(err.response?.data || err.message);

@@ -146,7 +146,7 @@ const Cart = () => {
             </Form.Group>
             <Form.Group className="mb-3">
               <Form.Label>Email</Form.Label>
-              <Form.Control type="email" placeholder="Enter Email" onChange={(e) => setEmail(e.target.value)} value={email} required />
+              <Form.Control type="email" placeholder="Enter Email" onChange={(e) => setEmail(e.target.value)} value={currentEmail} required />
             </Form.Group>
             <Form.Group className="mb-3">
               <Form.Label>Phone Number</Form.Label>

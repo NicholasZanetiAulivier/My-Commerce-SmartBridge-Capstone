@@ -28,20 +28,6 @@ const NavigationBar = () => {
         <div>
           <Navbar.Toggle aria-controls='basic-navbar-nav' />
           <Navbar.Collapse id='basic-navbar-nav'>
-            {type === 'admin' ?
-              null :
-              <Form className="d-flex">
-                <Form.Control
-                  type="search"
-                  placeholder="Search"
-                  className="mx-2"
-                  aria-label="Search"
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                />
-                <Button variant="success" className='mx-2' onClick={handleSearch}>Search</Button>
-              </Form>
-            }
             {type ?
               (
                 type === 'user' ?

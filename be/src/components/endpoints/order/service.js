@@ -40,7 +40,7 @@ async function getHistory(id, offset, limit) {
                     paymentMethod: e.paymentMethod,
                     status: e.orderStatus
                 }
-            )),
+            )) || [],
         count: results.length
     };
 }
@@ -76,7 +76,7 @@ async function getAll(offset, limit) {
                     status: e.orderStatus,
 
                 }
-            )),
+            )) || [],
         count: results.length
     };
 }
